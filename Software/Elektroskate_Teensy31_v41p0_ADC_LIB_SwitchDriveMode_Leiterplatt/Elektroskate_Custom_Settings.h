@@ -19,5 +19,5 @@
 // Welche Schnittstellen sollen verwendet werden
 // Serial  -> USB-Anschluss Teensy 3.1
 // Serial1 -> Bluetooth Schnittstelle, auf die Baudrate in Elektroskate_Custom_Parameters achten!
-#define Serial_BT Serial1        // Sollen die Werte fuer die BT-Schnittstelle auf USB oder Serial fuer das Debugging ausgegeben werden?
+#define Serial_BT Serial        // Sollen die Werte fuer die BT-Schnittstelle auf USB oder Serial fuer das Debugging ausgegeben werden?
 #define Serial_DB Serial        // Ausgabe der Debug Werte auf USB oder Serial ausgegeben werden?

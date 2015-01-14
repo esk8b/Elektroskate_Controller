@@ -46,7 +46,7 @@ IntervalTimer timer_3;                    // 0.05 Sekunden Timer (Motorsteuerung
 // Definition der ADC / DAC Eigenschaften
 #define AnalogReadResolutionBits 12       // Bit-Aufloesung fuer die Analog Digital Umsetzer (ADC) zur Strom- und Spannungsmessung
 #define AnalogReadResolutionValue (uint32_t) pow(2,AnalogReadResolutionBits)   // Festlegen der ADC-Aufloesung (Wertebereich)
-#define AnalogAveraging 8                 // Durchschnittswert bei der ADC-Messung bilden
+#define AnalogAveraging 32                 // Durchschnittswert bei der ADC-Messung bilden
 #define AnalogWriteResolutionBits 16      // Bit-Aufloesung fuer die Digital Analog Umsetzer (DAC)fuer die PWM-Ansteuerung des Motorstellers (Servo)
 #define AnalogWriteResolutionValue (uint32_t) pow(2,AnalogWriteResolutionBits) // Festlegen der DAC-Aufloesung (Wertebereich)
 
@@ -152,13 +152,13 @@ void setup()
   adc->setConversionSpeed(ADC_VERY_LOW_SPEED, ADC_1);   // change the conversion speed
   adc->setSamplingSpeed(ADC_VERY_LOW_SPEED, ADC_1);     // change the sampling speed
   // kann nur verwendet werden, wenn nicht mehr die Pins A0 und A1, sondern A0 und A2 verwendet werden.
-  // Vorteil ist, dass die Abfragezeit der ADC unter einer us sinkt
-  //adc->startContinuous(readPin, ADC_0);                // Starte die Dauermessung der beiden
-  //adc->startContinuous(readPin2, ADC_1);               // ADC im Hintergrund. Dies beschleunigt die Messwerterfassung um das
-                                                         // 150 Fache. Auch hohe Average stören nicht mehr
+  // Vorteil ist, dass die Abfragezeit der ADC unter einer 4us sinkt
+  adc->startContinuous(Pin_Ubatt, ADC_0);               // Starte die Dauermessung der beiden
+  adc->startContinuous(Pin_Strom, ADC_1);               // ADC im Hintergrund. Dies beschleunigt die Messwerterfassung um das
+                                                        // 150 Fache. Auch hohe Average stören nicht mehr
   // Die Abfrage der ADC muesste entsprechend angepasst werden
-  //adc->analogReadContinuous(ADC_0);                    // Hole den Messwert des ADC_0 ab Achtung asynchron
-  //adc->analogReadContinuous(ADC_1);                    // Hole den Messwert des ADC_0 ab Achtung asynchron
+  //adc->analogReadContinuous(ADC_0);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
+  //adc->analogReadContinuous(ADC_1);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
 
   // DAC Einstellungen
   analogWriteFrequency(Pin_Motorstelleranschluss_A, PWMFrequenz); // Einstellen der PWM Parameter fuer den Motorsteller
@@ -533,8 +533,11 @@ void Drive_Mode(){
 void UIMessung(){
 // Messen und berechnen von Strom Ubatt und Leistung
   if (DEBUG_Funktion) Serial_DB.println("Funktion: UIMessung");
-  Ubatt = adc->analogRead(Pin_Ubatt, ADC_0)*UbattFaktor; // Ubatt in V messen
-  Strom[StromIndex] = (adc->analogRead(Pin_Strom, ADC_1)*StromFaktor)-Strom0A; // Strom in A messen und in Array ablegen
+  //time = micros();
+  Ubatt = adc->analogReadContinuous(ADC_0)*UbattFaktor; // Ubatt in V messen
+  //time = micros()-time;
+  //Serial_DB.println(time);
+  Strom[StromIndex] = (adc->analogReadContinuous(ADC_1)*StromFaktor)-Strom0A; // Strom in A messen und in Array ablegen
   Momentanleistung = Ubatt * Strom[StromIndex];        // Berechnung der Momentanleistung
   StromIndex++;                                        // StromIndex increment
   if (StromIndex > 9) StromIndex = 0;                  // 10 Messwerte im Kreis messen
