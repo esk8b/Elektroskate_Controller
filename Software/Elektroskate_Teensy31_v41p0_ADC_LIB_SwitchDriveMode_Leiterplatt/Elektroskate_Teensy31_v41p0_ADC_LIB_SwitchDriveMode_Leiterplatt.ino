@@ -30,8 +30,9 @@
  */
 
 // Libraries 
-#include <Wire.h>                         // i2c Lib fuer 2 Wire Protokoll(fuer Nunchuck benoetigt)
-#include <Nunchuk.h>                      // Lib fuer Nunchuk auslesen modifiziert von Barney (modifizierte Wii Lib) 
+//#include <Wire.h>                       // i2c Lib fuer 2 Wire Protokoll(fuer Nunchuck benoetigt)
+#include <i2c_t3.h>                       // Teensy optimierte i2c Lib fuer 2 Wire Protokoll(fuer Nunchuck benoetigt)
+#include <NunchukTeensy.h>                // Lib fuer Nunchuk auslesen modifiziert von Barney (modifizierte Wii Lib) 
 #include <OneWire.h>                      // Lib um Dallas Temperaturbausteine auszulesen von http://www.pjrc.com/teensy/arduino_libraries/OneWire.zip
 #include <ADC.h>                          // http://forum.pjrc.com/threads/25532-ADC-library-update-now-with-support-for-Teensy-3-1
 #include "Elektroskate_Custom_Settings.h" // Festlegen des Debugging und der Funktionalitaeten wie Messungen usw.
@@ -350,7 +351,7 @@ void Funkabriss(){
 
 void Motorsteuerung(){
 // PWM-Stellwert Motorservo ermitteln und vorgeben
-
+//time = micros();
 int16_t Y_UT, Y_OT;        // Abstand zum unteren (UT) und oberen Totpunkt (OT)
 int8_t sgnY_UT, sgnY_OT;   // Lage der Sollwertvorgabe der Y-Achse relativ zum oberen bzw. unteren Totpunkt (+/-1)
 int8_t u, v, w;            // Hilfsvariablen zur Bereichserkennung der Y-Achse analogY_12bit relativ zu UT, OT (artifiziell)
@@ -433,6 +434,10 @@ uint32_t StellWertMotorMaxOT;   //Maxialer Wertebereich für den Motorstellwert 
     if (StellWertMotor >  LeerlaufStellWertMotor) Serial_DB.println(" Beschleunigung");
     if (StellWertMotor <  LeerlaufStellWertMotor) Serial_DB.println(" Bremsen");
   }
+  // CPU-Zeit messen und anzeigen
+  //time = micros()-time;
+  //Serial_DB.print("Ausfuehrungszeit: ");
+  //Serial_DB.println(time);
 }
 
 void Licht_Hupe(){   
@@ -550,17 +555,21 @@ void UIMessung(){
   } 
 }
 
-void UIausgeben(){
+FASTRUN void UIausgeben(){
 // Ausgabe der Messwerte ueber die Serielle und oder Bluetooth
   if (DEBUG_Funktion) Serial_DB.println("Funktion: UIausgeben");
-  Serial_BT.print(Ubatt);              // Spannung ausgeben
+  //time = micros();
+  Serial_BT.print(Ubatt,3);              // Spannung ausgeben
   Serial_BT.print("V, ");
-  Serial_BT.print(Iaverage());         // Durchschnittsstrom ausgeben
+  Serial_BT.print(Iaverage(),3);         // Durchschnittsstrom ausgeben
   Serial_BT.print("A, ");
-  Serial_BT.print(Momentanleistung);   // Momentanleistung ausgeben
+  Serial_BT.print(Momentanleistung,2);   // Momentanleistung ausgeben
   Serial_BT.print("W, ");
-  Serial_BT.print(Leistung);           // Umgesetzte Leistung ausgeben 
+  Serial_BT.print(Leistung,2);           // Umgesetzte Leistung ausgeben 
   Serial_BT.println("Wh");
+  //time = micros()-time;
+  //Serial_DB.print("Ausfuehrungszeit: ");
+  //Serial_DB.println(time);
 }
 
 float Iaverage()   

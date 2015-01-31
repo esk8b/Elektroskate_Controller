@@ -13,11 +13,11 @@
 #define DEBUG_Nunchuk      FALSE // Aktivieren der Debugausgabe Nunchuk Werte x,y-Achse, Beschleunigung, c,z-Button(TRUE,FALSE)
 #define DEBUG_Messung      FALSE // Aktivieren der Debugausgabe interne Messwerte und Berechnungen (TRUE,FALSE)
 #define DEBUG_Motorsteller FALSE // Aktivieren der Debugausgabe interne Werte Motorsteller (TRUE,FALSE)
-#define DEBUG_DriveMode    FALSE  // Aktivieren der Debugausgabe interne Werte Motorsteller (TRUE,FALSE)
+#define DEBUG_DriveMode    FALSE // Aktivieren der Debugausgabe interne Werte Motorsteller (TRUE,FALSE)
 
 
 // Welche Schnittstellen sollen verwendet werden
 // Serial  -> USB-Anschluss Teensy 3.1
 // Serial1 -> Bluetooth Schnittstelle, auf die Baudrate in Elektroskate_Custom_Parameters achten!
-#define Serial_BT Serial        // Sollen die Werte fuer die BT-Schnittstelle auf USB oder Serial fuer das Debugging ausgegeben werden?
+#define Serial_BT Serial1       // Sollen die Werte fuer die BT-Schnittstelle auf USB oder Serial fuer das Debugging ausgegeben werden?
 #define Serial_DB Serial        // Ausgabe der Debug Werte auf USB oder Serial ausgegeben werden?

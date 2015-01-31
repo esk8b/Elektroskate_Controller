@@ -75,4 +75,8 @@ Revision
  
  4.1p0-28.12.2014 Barney: Die Leiterplattenversion v2.5 hat jetzt den Stromsensor an A2. Dadurch kann die ADC-Lib die beiden ADCs getrennt im Teensy parametrieren.
                           Durch die neue Leiterplatte wird der Temperatursensor und die beiden HV-Anschlüsse mit 3.3V versorgt.
+						  
+4.1p0-15.01.2015		  Die Strom und Spannungsmessung erfolgt jetzt über die zwei eingebauten ADC-Kanäle ADC_0 und ADC_1. 
+						  Die Mittelwertbildung wurde von 8 auf 32 angehoben. Eine Messung würde 433µs dauern, es wurde aber die Asynchrone Messung aktiviert. Der Teensy muss jetzt nicht mehr auf den ADC warten. Das Abholen des Messwertes dauert nur noch 2-3µs.
+
                   
