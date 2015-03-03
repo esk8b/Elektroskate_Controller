@@ -1,1 +1,0 @@
-Bitte für den Bestückungsdruck den Layer 125 _tNames verwenden. Nicht den Layer 25 tNames!

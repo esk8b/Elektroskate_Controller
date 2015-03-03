@@ -52,7 +52,7 @@ uint8_t defTempAddress[3][8] = {{ 0x28, 0x00, 0xA5, 0xC6, 0x04, 0x00, 0x00, 0x51
 
 // Fahrmodus
 // Wie soll gesteuert werden
-uint32_t DirectDrive            = FALSE; // TRUE -> Direct Drive, FALSE -> Integrations Drive. Das Startverhalten nicht aendern!
+uint32_t DirectDrive            = false; // TRUE -> Direct Drive, FALSE -> Integrations Drive. Das Startverhalten nicht aendern!
 
 // Incrementel Drive Parameter
 #define BeschleunigungsDaempfung (uint32_t)  112 // Je groesser die BeschleunigungsDaempfung, desto langsamer wird inkrementell beschleunigt (ggf. anpassen)   (0..32^2, 0..250)

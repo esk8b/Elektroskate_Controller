@@ -1,19 +1,19 @@
 // Version v4p9
 
 // Sonderfunktionen
-#define UIMESS     TRUE         // HW UI-Messung vorhanden (TRUE,FALSE)
-#define LICHTHUPE  TRUE         // HW Licht, Hupe vorhanden (TRUE,FALSE)
-#define TEMPMESS   TRUE         // HW Temperaturmessung vorhanden (TRUE,FALSE)
-#define LESOFT     TRUE         // HW Leistungselektronik langsam hochfahren vorhanden (TRUE,FALSE)
+#define UIMESS     true         // HW UI-Messung vorhanden (true,false)
+#define LICHTHUPE  true         // HW Licht, Hupe vorhanden (true,false)
+#define TEMPMESS   true         // HW Temperaturmessung vorhanden (true,false)
+#define LESOFT     true         // HW Leistungselektronik langsam hochfahren vorhanden (true,false)
 
 // Debugflag
-#define DEBUG              FALSE // Aktivieren der Debugausgabe (TRUE,FALSE)
-#define DEBUG_Funktion     FALSE // Aktivieren der Debugausgabe Welche Funktionen werden aufgerufen (TRUE,FALSE)
-#define DEBUG_ISR          FALSE // Aktivieren der Debugausgabe Aufruf der ISR Interrupt Service Routinen (TRUE,FALSE)
-#define DEBUG_Nunchuk      FALSE // Aktivieren der Debugausgabe Nunchuk Werte x,y-Achse, Beschleunigung, c,z-Button(TRUE,FALSE)
-#define DEBUG_Messung      FALSE // Aktivieren der Debugausgabe interne Messwerte und Berechnungen (TRUE,FALSE)
-#define DEBUG_Motorsteller FALSE // Aktivieren der Debugausgabe interne Werte Motorsteller (TRUE,FALSE)
-#define DEBUG_DriveMode    FALSE // Aktivieren der Debugausgabe interne Werte Motorsteller (TRUE,FALSE)
+#define DEBUG              false // Aktivieren der Debugausgabe (true,false)
+#define DEBUG_Funktion     false // Aktivieren der Debugausgabe Welche Funktionen werden aufgerufen (true,false)
+#define DEBUG_ISR          false // Aktivieren der Debugausgabe Aufruf der ISR Interrupt Service Routinen (true,false)
+#define DEBUG_Nunchuk      false // Aktivieren der Debugausgabe Nunchuk Werte x,y-Achse, Beschleunigung, c,z-Button(true,false)
+#define DEBUG_Messung      false // Aktivieren der Debugausgabe interne Messwerte und Berechnungen (true,false)
+#define DEBUG_Motorsteller false // Aktivieren der Debugausgabe interne Werte Motorsteller (true,false)
+#define DEBUG_DriveMode    false // Aktivieren der Debugausgabe interne Werte Motorsteller (true,false)
 
 
 // Welche Schnittstellen sollen verwendet werden
