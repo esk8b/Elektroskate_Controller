@@ -1,0 +1,87 @@
+
+(rules PCB Teensy
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 1090)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.6)
+    )
+    (layer_rule In1.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.6)
+    )
+  )
+  (rule
+    (width 150.0)
+    (clear 150.2)
+    (clear 75.0 (type smd_to_turn_gap))
+    (clear 37.6 (type smd_smd))
+  )
+  (padstack "Via[0-1]_600:300_um"
+    (shape
+      (circle F.Cu 600.0 0.0 0.0)
+    )
+    (shape
+      (circle In1.Cu 600.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_600:300_um" "Via[0-1]_600:300_um" default
+  )
+  (via 
+    "Via[0-1]_600:300_um-kicad_default" "Via[0-1]_600:300_um" "kicad_default"
+  )
+  (via_rule
+    default "Via[0-1]_600:300_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_600:300_um-kicad_default"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 150.0)
+    )
+    (circuit 
+      (use_layer F.Cu In1.Cu)
+    )
+  )
+  (class "kicad_default"
+    "Net-(U1-PadAGND)" "Net-(U1-PadAREF)" GND "Net-(U1-PadPGM)" "Net-(U1-PadVBAT)" "Net-(U1-PadVIN)" "Net-(U1-PadVUSB)" "Net-(U2-Pad3)"
+    "Net-(U2-Pad4)" "Net-(U2-Pad5)" "Net-(U2-Pad6)" "Net-(U2-Pad7)" "Net-(U2-Pad8)" "Net-(U2-Pad9)" "Net-(U2-Pad10)" "Net-(U2-Pad11)"
+    "Net-(U2-Pad14)" "Net-(U2-Pad15)" "Net-(U2-Pad16)" "Net-(U2-Pad17)" "Net-(U2-Pad18)" "Net-(U2-Pad19)" "Net-(U2-Pad20)" "Net-(U2-Pad23)"
+    "Net-(U2-Pad24)" "Net-(U2-Pad25)" "Net-(U2-Pad26)" "Net-(U2-Pad27)" "Net-(U2-Pad28)" "Net-(U2-Pad29)" "Net-(U2-Pad30)" "Net-(U2-Pad33)"
+    "Net-(Q1-PadG)" "/Tx_1" "/Rx_1" "Net-(Q2-PadG)" "Net-(Q3-PadG)" "Net-(Q4-PadG)" "Net-(Q5-PadG)" +3V3
+    "Net-(D1-Pad2)" "Net-(IC1-Pad5)" /A14 /A11 /A10 /A3 /A7 /A1
+    /Pairing /Rx3 /Tx3 /Rx2 /Tx2 /Temp /UbMess /IMess
+    /SDA /SCL "/TeensyS2/BEC_B-5V" "/TeensyS2/Motor_Opto_B" "/TeensyS2/BEC_A-5V" "/TeensyS2/Motor_Opto_A" "/TeensyS2/GND_BEC_A" "/TeensyS2/GND_BEC_B"
+    "Net-(D2-Pad2)" "Net-(D3-Pad2)" Hupe "Motorst_A" "Motorst_B" Licht Bremse "Blinker_L"
+    "Blinker_R" "PWM_Power" "Brems_Servo" "Net-(GS3-Pad1)" "/TeensyS2/Brems_Vcc" "/TeensyS2/Hupe_Out" "/TeensyS2/Licht_Out" "/TeensyS2/Bremse_Out"
+    "/TeensyS2/Blinker_L_Out" "/TeensyS2/Blinker_R_Out" UBatt "Net-(AT-Mode1-Pad2)" "Net-(R20-Pad2)" "Net-(R21-Pad1)" "Net-(R21-Pad2)" "Net-(R22-Pad1)"
+    "Net-(R22-Pad2)" "Net-(GS1-Pad2)" "Net-(C5-Pad1)" "Net-(IC1-Pad2)" "Net-(IC1-Pad4)" "Net-(IC1-Pad8)" "Net-(IC2-Pad2)" "Net-(IC2-Pad4)"
+    (clearance_class "kicad_default")
+    (via_rule kicad_default)
+    (rule
+      (width 150.0)
+    )
+    (circuit 
+      (use_layer F.Cu In1.Cu)
+    )
+  )
+)
