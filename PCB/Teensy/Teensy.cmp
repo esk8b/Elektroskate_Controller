@@ -1,10 +1,18 @@
-Cmp-Mod V01 Genere par PcbNew le 03.03.2015 13:28:19
+Cmp-Mod V01 Genere par PcbNew le 04.03.2015 10:46:17
+
+BeginCmp
+TimeStamp = 54EB8C23
+Path = /54E24A28
+Reference = U1;
+ValeurCmp = TEENSY_3.1+4;
+IdModule  = Teensy_3_Series_Board_v1.0:Teensy_3_Series_Board_v1.0-TEENSY_3.1+4;
+EndCmp
 
 BeginCmp
 TimeStamp = 54EB7715
 Path = /54ED5196
 Reference = D4;
-ValeurCmp = 1N4004;
+ValeurCmp = 1N4001-SMD;
 IdModule  = packages:SOD123F-REFLOW;
 EndCmp
 
@@ -30,14 +38,6 @@ Path = /54E61B75/54EB9B12
 Reference = JP1;
 ValeurCmp = MotorOpt;
 IdModule  = packages:connector-JP3Q;
-EndCmp
-
-BeginCmp
-TimeStamp = 54EB8C23
-Path = /54E24A28
-Reference = U1;
-ValeurCmp = TEENSY_3.1+4;
-IdModule  = Teensy_3_Series_Board_v1.0:Teensy_3_Series_Board_v1.0-TEENSY_3.1+4;
 EndCmp
 
 BeginCmp
@@ -364,7 +364,7 @@ BeginCmp
 TimeStamp = 54EB66EA
 Path = /54ED0754
 Reference = rot1;
-ValeurCmp = LED;
+ValeurCmp = Pair;
 IdModule  = LEDs:LED-0805;
 EndCmp
 
@@ -372,7 +372,7 @@ BeginCmp
 TimeStamp = 54EB678D
 Path = /54ECFB96
 Reference = Strom1;
-ValeurCmp = CONN_01X03;
+ValeurCmp = Strom;
 IdModule  = Pin_Headers:Pin_Header_Angled_1x03;
 EndCmp
 
@@ -380,7 +380,7 @@ BeginCmp
 TimeStamp = 54EB67BA
 Path = /54ECFAA8
 Reference = Temp1;
-ValeurCmp = CONN_01X03;
+ValeurCmp = Temp;
 IdModule  = Pin_Headers:Pin_Header_Angled_1x03;
 EndCmp
 
@@ -388,7 +388,7 @@ BeginCmp
 TimeStamp = 54F5737D
 Path = /54ED0E8D
 Reference = gelb1;
-ValeurCmp = LED;
+ValeurCmp = AT-Mode;
 IdModule  = LEDs:LED-0805;
 EndCmp
 
@@ -396,7 +396,7 @@ BeginCmp
 TimeStamp = 54EB6C19
 Path = /54ED0E0A
 Reference = grün1;
-ValeurCmp = LED;
+ValeurCmp = BT-Pair;
 IdModule  = LEDs:LED-0805;
 EndCmp
 
@@ -481,14 +481,6 @@ IdModule  = Capacitors_SMD:C_1206;
 EndCmp
 
 BeginCmp
-TimeStamp = 54EB2E07
-Path = /54E61B75/54E73FE1
-Reference = D3;
-ValeurCmp = 15V;
-IdModule  = Diodes_ThroughHole:Diode_DO-35_SOD27_Horizontal_RM10;
-EndCmp
-
-BeginCmp
 TimeStamp = 54F06BD7
 Path = /54E61B75/54E8DA8E
 Reference = JP2;
@@ -540,7 +532,7 @@ BeginCmp
 TimeStamp = 54F06AED
 Path = /54F07679
 Reference = C7;
-ValeurCmp = 0.1-4.7µF;
+ValeurCmp = 4.7µF;
 IdModule  = Capacitors_SMD:C_1206;
 EndCmp
 
@@ -548,7 +540,7 @@ BeginCmp
 TimeStamp = 54F06ABA
 Path = /54F075EE
 Reference = R24;
-ValeurCmp = 1-3K;
+ValeurCmp = 3K;
 IdModule  = Resistors_SMD:R_1206;
 EndCmp
 
@@ -590,6 +582,14 @@ Path = /54ED4556
 Reference = X1;
 ValeurCmp = Supply;
 IdModule  = packages:con-pss254_reichelt-03W;
+EndCmp
+
+BeginCmp
+TimeStamp = 54F5E453
+Path = /54E61B75/54E73FE1
+Reference = D3;
+ValeurCmp = 15V;
+IdModule  = Discret:DO-35;
 EndCmp
 
 EndListe
