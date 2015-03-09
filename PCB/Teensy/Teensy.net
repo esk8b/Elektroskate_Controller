@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source C:/Users/Laptop-02/Documents/KiCad/Teensy/Teensy.sch)
-    (date "04.03.2015 10:52:10")
+    (date "09.03.2015 18:00:17")
     (tool "Eeschema (2015-01-16 BZR 5376)-product"))
   (components
     (comp (ref U1)
@@ -143,7 +143,7 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 54ED9EAA))
     (comp (ref C32)
-      (value 4,7µF)
+      (value 4.7µF)
       (footprint Capacitors_SMD:C_1206)
       (libsource (lib device) (part C))
       (sheetpath (names /) (tstamps /))
@@ -449,46 +449,6 @@
       (sheetpath (names /TeensyS2/) (tstamps /54E61B75/))
       (tstamp 54EC76C3)))
   (libparts
-    (libpart (lib device) (part LED)
-      (footprints
-        (fp LED-3MM)
-        (fp LED-5MM)
-        (fp LED-10MM)
-        (fp LED-0603)
-        (fp LED-0805)
-        (fp LED-1206)
-        (fp LEDV))
-      (fields
-        (field (name Reference) D)
-        (field (name Value) LED))
-      (pins
-        (pin (num 1) (name A) (type passive))
-        (pin (num 2) (name K) (type passive))))
-    (libpart (lib device) (part MOS_N)
-      (aliases
-        (alias MOSFET_N))
-      (docs transistors/mos/*.*)
-      (fields
-        (field (name Reference) Q)
-        (field (name Value) MOS_N))
-      (pins
-        (pin (num D) (name D) (type passive))
-        (pin (num G) (name G) (type input))
-        (pin (num S) (name S) (type passive))))
-    (libpart (lib device) (part R)
-      (description Resistance)
-      (footprints
-        (fp R?)
-        (fp SM0603)
-        (fp SM0805)
-        (fp R?-*)
-        (fp SM1206))
-      (fields
-        (field (name Reference) R)
-        (field (name Value) R))
-      (pins
-        (pin (num 1) (name ~) (type passive))
-        (pin (num 2) (name ~) (type passive))))
     (libpart (lib device) (part DIODE)
       (description "Diode simple")
       (footprints
@@ -512,18 +472,58 @@
       (pins
         (pin (num 1) (name ~) (type passive))
         (pin (num 2) (name ~) (type passive))))
-    (libpart (lib conn) (part CONN_01X02)
-      (footprints
-        (fp Pin_Header_Straight_1X02)
-        (fp Pin_Header_Angled_1X02)
-        (fp Socket_Strip_Straight_1X02)
-        (fp Socket_Strip_Angled_1X02))
+    (libpart (lib device) (part MOS_N)
+      (aliases
+        (alias MOSFET_N))
+      (docs transistors/mos/*.*)
       (fields
-        (field (name Reference) P)
-        (field (name Value) CONN_01X02))
+        (field (name Reference) Q)
+        (field (name Value) MOS_N))
       (pins
-        (pin (num 1) (name P1) (type passive))
-        (pin (num 2) (name P2) (type passive))))
+        (pin (num D) (name D) (type passive))
+        (pin (num G) (name G) (type input))
+        (pin (num S) (name S) (type passive))))
+    (libpart (lib device) (part LED)
+      (footprints
+        (fp LED-3MM)
+        (fp LED-5MM)
+        (fp LED-10MM)
+        (fp LED-0603)
+        (fp LED-0805)
+        (fp LED-1206)
+        (fp LEDV))
+      (fields
+        (field (name Reference) D)
+        (field (name Value) LED))
+      (pins
+        (pin (num 1) (name A) (type passive))
+        (pin (num 2) (name K) (type passive))))
+    (libpart (lib device) (part R)
+      (description Resistance)
+      (footprints
+        (fp R?)
+        (fp SM0603)
+        (fp SM0805)
+        (fp R?-*)
+        (fp SM1206))
+      (fields
+        (field (name Reference) R)
+        (field (name Value) R))
+      (pins
+        (pin (num 1) (name ~) (type passive))
+        (pin (num 2) (name ~) (type passive))))
+    (libpart (lib device) (part ZENER)
+      (description "Diode zener")
+      (footprints
+        (fp D?)
+        (fp SO*)
+        (fp SM*))
+      (fields
+        (field (name Reference) D)
+        (field (name Value) ZENER))
+      (pins
+        (pin (num 1) (name A) (type passive))
+        (pin (num 2) (name K) (type passive))))
     (libpart (lib conn) (part CONN_01X03)
       (footprints
         (fp Pin_Header_Straight_1X03)
@@ -537,6 +537,18 @@
         (pin (num 1) (name P1) (type passive))
         (pin (num 2) (name P2) (type passive))
         (pin (num 3) (name P3) (type passive))))
+    (libpart (lib conn) (part CONN_01X02)
+      (footprints
+        (fp Pin_Header_Straight_1X02)
+        (fp Pin_Header_Angled_1X02)
+        (fp Socket_Strip_Straight_1X02)
+        (fp Socket_Strip_Angled_1X02))
+      (fields
+        (field (name Reference) P)
+        (field (name Value) CONN_01X02))
+      (pins
+        (pin (num 1) (name P1) (type passive))
+        (pin (num 2) (name P2) (type passive))))
     (libpart (lib conn) (part CONN_01X04)
       (footprints
         (fp Pin_Header_Straight_1X04)
@@ -583,18 +595,6 @@
         (pin (num 6) (name P6) (type passive))
         (pin (num 7) (name P7) (type passive))
         (pin (num 8) (name P8) (type passive))))
-    (libpart (lib device) (part ZENER)
-      (description "Diode zener")
-      (footprints
-        (fp D?)
-        (fp SO*)
-        (fp SM*))
-      (fields
-        (field (name Reference) D)
-        (field (name Value) ZENER))
-      (pins
-        (pin (num 1) (name A) (type passive))
-        (pin (num 2) (name K) (type passive))))
     (libpart (lib conn) (part GS2)
       (fields
         (field (name Reference) GS)
@@ -603,6 +603,43 @@
       (pins
         (pin (num 1) (name G1) (type passive))
         (pin (num 2) (name G2) (type passive))))
+    (libpart (lib Teensy-cache) (part CNY74-2)
+      (fields
+        (field (name Reference) IC)
+        (field (name Value) CNY74-2)
+        (field (name Footprint) DIP8))
+      (pins
+        (pin (num 1) (name ~) (type passive))
+        (pin (num 2) (name ~) (type passive))
+        (pin (num 3) (name ~) (type passive))
+        (pin (num 4) (name ~) (type passive))
+        (pin (num 5) (name ~) (type passive))
+        (pin (num 6) (name ~) (type passive))
+        (pin (num 7) (name ~) (type passive))
+        (pin (num 8) (name ~) (type passive))))
+    (libpart (lib Teensy-cache) (part PSS254_2GEWINKELT)
+      (fields
+        (field (name Reference) ??)
+        (field (name Value) PSS254_2GEWINKELT))
+      (pins
+        (pin (num P$1) (name 1) (type passive))
+        (pin (num P$2) (name 2) (type passive))))
+    (libpart (lib Teensy-cache) (part JP3QE)
+      (fields
+        (field (name Reference) JP)
+        (field (name Value) JP3QE)
+        (field (name Footprint) connector-JP3Q))
+      (pins
+        (pin (num 1A) (name 1) (type passive))
+        (pin (num 1B) (name 1) (type passive))
+        (pin (num 2A) (name 2) (type passive))
+        (pin (num 2B) (name 2) (type passive))
+        (pin (num 3A) (name 3) (type passive))
+        (pin (num 3B) (name 3) (type passive))))
+    (libpart (lib Teensy-cache) (part Mount_Hole)
+      (fields
+        (field (name Reference) H)
+        (field (name Value) Mount_Hole)))
     (libpart (lib Teensy-cache) (part HC_05)
       (footprints
         (fp ITEAD_HC-05))
@@ -644,22 +681,6 @@
         (pin (num 32) (name PIO9) (type BiDi))
         (pin (num 33) (name PIO10) (type BiDi))
         (pin (num 34) (name PIO11) (type BiDi))))
-    (libpart (lib Teensy-cache) (part Mount_Hole)
-      (fields
-        (field (name Reference) H)
-        (field (name Value) Mount_Hole)))
-    (libpart (lib Teensy-cache) (part JP3QE)
-      (fields
-        (field (name Reference) JP)
-        (field (name Value) JP3QE)
-        (field (name Footprint) connector-JP3Q))
-      (pins
-        (pin (num 1A) (name 1) (type passive))
-        (pin (num 1B) (name 1) (type passive))
-        (pin (num 2A) (name 2) (type passive))
-        (pin (num 2B) (name 2) (type passive))
-        (pin (num 3A) (name 3) (type passive))
-        (pin (num 3B) (name 3) (type passive))))
     (libpart (lib Teensy-cache) (part LC78_)
       (fields
         (field (name Reference) U)
@@ -716,28 +737,7 @@
         (pin (num PGM) (name PGM) (type BiDi))
         (pin (num VBAT) (name VBAT) (type power_in))
         (pin (num VIN) (name VIN) (type power_in))
-        (pin (num VUSB) (name VUSB) (type power_in))))
-    (libpart (lib Teensy-cache) (part CNY74-2)
-      (fields
-        (field (name Reference) IC)
-        (field (name Value) CNY74-2)
-        (field (name Footprint) DIP8))
-      (pins
-        (pin (num 1) (name ~) (type passive))
-        (pin (num 2) (name ~) (type passive))
-        (pin (num 3) (name ~) (type passive))
-        (pin (num 4) (name ~) (type passive))
-        (pin (num 5) (name ~) (type passive))
-        (pin (num 6) (name ~) (type passive))
-        (pin (num 7) (name ~) (type passive))
-        (pin (num 8) (name ~) (type passive))))
-    (libpart (lib Teensy-cache) (part PSS254_2GEWINKELT)
-      (fields
-        (field (name Reference) ??)
-        (field (name Value) PSS254_2GEWINKELT))
-      (pins
-        (pin (num P$1) (name 1) (type passive))
-        (pin (num P$2) (name 2) (type passive)))))
+        (pin (num VUSB) (name VUSB) (type power_in)))))
   (libraries
     (library (logical device)
       (uri d:\KiCad\share\library\device.lib))
