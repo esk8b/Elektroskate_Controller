@@ -33,9 +33,8 @@
 #define PairingSuccessTrigger (uint16_t)    5 // Schwellwert fuer erfolgreiche Verbindung (0..65535, 5..10)
 
 // Temperatursensoren
-#define defTempSensorAnzahl (uint8_t) 1       // Die Temperatursensoranzahl hier eintragen
-uint8_t defTempAddress[3][8] = {{ 0x28, 0x00, 0xA5, 0xC6, 0x04, 0x00, 0x00, 0x51 }     // Seriennummer des Testsensors
-                               ,{ 0x28, 0x75, 0x3F, 0x2A, 0x04, 0x00, 0x00, 0x73 }     // Seriennummer der Temperatursensoren, diese muss extra ermittelt werden
+#define defTempSensorAnzahl (uint8_t) 2       // Die Temperatursensoranzahl hier eintragen
+uint8_t defTempAddress[2][8] = {{ 0x28, 0x75, 0x3F, 0x2A, 0x04, 0x00, 0x00, 0x73 }     // Seriennummer der Temperatursensoren, diese muss extra ermittelt werden
                                ,{ 0x28, 0x0D, 0xE2, 0x00, 0x04, 0x00, 0x00, 0x93 }};   // Seriennummer der Temperatursensoren, diese muss extra ermittelt werden
 
 // PWM Motorsteuerung

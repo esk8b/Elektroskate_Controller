@@ -158,8 +158,8 @@ void setup()
   adc->startContinuous(Pin_Strom, ADC_1);               // ADC im Hintergrund. Dies beschleunigt die Messwerterfassung um das
   // 150 Fache. Auch hohe Average stören nicht mehr
   // Die Abfrage der ADC muesste entsprechend angepasst werden
-  //adc->analogReadContinuous(ADC_0);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
-  //adc->analogReadContinuous(ADC_1);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
+  adc->analogReadContinuous(ADC_0);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
+  adc->analogReadContinuous(ADC_1);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
 
   // DAC Einstellungen
   analogWriteFrequency(Pin_Motorstelleranschluss_A, PWMFrequenz); // Einstellen der PWM Parameter fuer den Motorsteller
@@ -585,8 +585,9 @@ float Iaverage()
   return Ergebnis;
 }
 
-float Temperaturmessung(uint8_t TempSensor, uint8_t TempSensorAnzahl, uint8_t TempAddress[3][8]) // Rueckgabewert celsius
+float Temperaturmessung(uint8_t TempSensor, uint8_t TempSensorAnzahl, uint8_t TempAddress[2][8]) // Rueckgabewert celsius
 // Temperaturmessung mittels OneWire Bussystem
+// Achtung nur DS18B20
 {
   if (DEBUG_Funktion) Serial_DB.println("Funktion: Temperaturmessung");
   uint32_t data[12];
@@ -594,14 +595,17 @@ float Temperaturmessung(uint8_t TempSensor, uint8_t TempSensorAnzahl, uint8_t Te
 
   ds.reset();
   ds.select(TempAddress[TempSensor]);
-  ds.write(0x44);        // start conversion
+  ds.write(0x44);        // start conversion 
+  ds.reset();
   ds.select(TempAddress[TempSensor]);
   ds.write(0xBE);        // Read Scratchpad
 
   data[0] = ds.read();   // Temperatur abholen unteres uint32_t
   data[1] = ds.read();   // Temperatur abholen oberes uint32_t
 
+
   uint32_t raw = (data[1] << 8) | data[0];
+  
   celsius = (float)raw / 16.0;
 
   return celsius;
