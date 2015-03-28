@@ -29,13 +29,13 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:Teensy-cache
+LIBS:BamBam BoardController-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 2
-Title "Elektroskate Teensy"
+Title "BamBam BoardController"
 Date "19.02.2015"
 Rev "1.0"
 Comp ""
@@ -69,8 +69,8 @@ $EndComp
 $Sheet
 S 7100 6200 500  150 
 U 54E61B75
-F0 "TeensyS2" 60
-F1 "TeensyS2.sch" 60
+F0 "BamBam BoardController" 60
+F1 "BamBam BoardControllerS2.sch" 60
 $EndSheet
 Text Label 6250 1250 0    60   ~ 0
 Tx_1

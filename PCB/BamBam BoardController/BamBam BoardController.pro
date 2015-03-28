@@ -1,4 +1,4 @@
-update=03.03.2015 14:20:05
+update=28.03.2015 21:29:29
 version=1
 last_client=kicad
 [cvpcb]
@@ -7,7 +7,7 @@ NetIExt=net
 [pcbnew]
 version=1
 PageLayoutDescrFile=
-LastNetListRead=Teensy.net
+LastNetListRead=BamBam BoardController.net
 UseCmpFile=1
 PadDrill=0.9144
 PadDrillOvalY=0.9144
@@ -58,8 +58,6 @@ LibName27=opto
 LibName28=atmel
 LibName29=contrib
 LibName30=valves
-[general]
-version=1
 [schematic_editor]
 version=1
 PageLayoutDescrFile=
@@ -73,3 +71,5 @@ RptD_X=0
 RptD_Y=100
 RptLab=1
 LabSize=60
+[general]
+version=1

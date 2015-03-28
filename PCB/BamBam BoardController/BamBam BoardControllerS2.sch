@@ -29,7 +29,7 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:Teensy-cache
+LIBS:BamBam BoardController-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -643,7 +643,7 @@ L CONN_01X03 P1
 U 1 1 54E9989A
 P 4650 5800
 F 0 "P1" H 4650 6000 50  0000 C CNN
-F 1 "BremsOpto" H 4650 5600 50  0000 C CNN
+F 1 "Bremse" H 4650 5600 50  0000 C CNN
 F 2 "Pin_Headers:Pin_Header_Angled_1x03" H 4650 5800 60  0001 C CNN
 F 3 "" H 4650 5800 60  0000 C CNN
 	1    4650 5800
