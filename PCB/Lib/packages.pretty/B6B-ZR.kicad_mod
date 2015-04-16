@@ -1,7 +1,7 @@
-(module w_rf_modules:B6B-ZR (layer F.Cu) (tedit 5513E6B9)
+(module w_rf_modules:B6B-ZR (layer F.Cu) (tedit 5513F10F)
   (descr "JST ZR series connector, B6B-ZR")
-  (fp_text reference P1 (at 1.444 -2.99974) (layer F.SilkS)
-    (effects (font (thickness 0.3048)))
+  (fp_text reference P1 (at -6.096 0) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
   )
   (fp_text value CONN_01X06 (at 1.444 4.20116) (layer F.SilkS) hide
     (effects (font (thickness 0.3048)))
@@ -12,7 +12,7 @@
   (fp_line (start -4.956 0.2) (end -4.756 0.2) (layer F.SilkS) (width 0.3))
   (fp_line (start -4.756 0.2) (end -4.756 0.4) (layer F.SilkS) (width 0.3))
   (fp_line (start -4.756 0.4) (end -4.956 0.4) (layer F.SilkS) (width 0.3))
-  (fp_line (start -4.956 1) (end 5.044 1) (layer F.SilkS) (width 0.3))
+  (fp_line (start -4.956 1.254) (end 5.044 1.254) (layer F.SilkS) (width 0.3))
   (fp_line (start -4.956 -1.4) (end 5.044 -1.4) (layer F.SilkS) (width 0.3))
   (fp_line (start 5.044 -1.4) (end 5.044 2.2) (layer F.SilkS) (width 0.3))
   (fp_line (start 5.044 2.2) (end -4.956 2.2) (layer F.SilkS) (width 0.3))
@@ -24,7 +24,7 @@
   (pad 5 thru_hole oval (at 2.244 0) (size 1.19888 1.69926) (drill 0.70104) (layers *.Cu *.Mask F.SilkS))
   (pad 6 thru_hole oval (at 3.744 0) (size 1.19888 1.69926) (drill 0.70104) (layers *.Cu *.Mask F.SilkS))
   (model C:/Users/Laptop-02/Documents/KiCad/Lib/packages3d/B6B-ZR.wrl
-    (at (xyz 0 0 0))
+    (at (xyz 0 0.054 0))
     (scale (xyz 0.3937 0.3937 0.3937))
     (rotate (xyz -90 0 180))
   )
