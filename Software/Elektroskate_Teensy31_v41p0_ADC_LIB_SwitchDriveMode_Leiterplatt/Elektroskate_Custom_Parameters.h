@@ -58,7 +58,7 @@ uint32_t DirectDrive            = false; // TRUE -> Direct Drive, FALSE -> Integ
 #define BremsDaempfung           (uint32_t)  80  // Je groesser die BremsDaempfung, desto langsamer wird die Bremskraft inkrementell aufgebaut (ggf. anpassen)   (0..32^2, 0..250)
 
 // Spannungs/- und Strommessung
-#define BattSpgMMax (float) 32.2 // Maximale messbare Batterienspannung 33V (10k Ohm / 2 x 180k Ohm), oder 40V (10k Ohm / 121k Ohm) 
+#define BattSpgMMax (float) 32.7 // Maximale messbare Batterienspannung 33V (10k Ohm / 2 x 180k Ohm), oder 40V (10k Ohm / 121k Ohm) 
 #define StromMMax   (float) 50.0 // Maximal messbarer Strom in A (ACS756SCA-050B Stromsensor)
 
 // Strombegrenzung und Kurzschlusserkennung

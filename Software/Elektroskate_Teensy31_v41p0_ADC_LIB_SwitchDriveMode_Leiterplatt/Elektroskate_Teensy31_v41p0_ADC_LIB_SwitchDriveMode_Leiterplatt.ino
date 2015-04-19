@@ -262,7 +262,7 @@ void TimerT3() {
     if (LICHTHUPE) Licht_Hupe();   // Licht und Hupe
     Hase_Igel();                   // Geschwindigkeitsumschaltung
     BlinkerRL();                   // Blinker Rechts Links
-    Drive_Mode();                  // Umschaltung DirectDrive / Integral Mode
+    //Drive_Mode();                  // Umschaltung DirectDrive / Integral Mode
   }
 }
 
