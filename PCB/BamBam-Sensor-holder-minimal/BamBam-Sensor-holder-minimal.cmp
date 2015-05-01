@@ -1,0 +1,136 @@
+Cmp-Mod V01 Created by Cvpcb (after 2015-mar-04 BZR unknown)-product   date = 16.04.2015 12:55:46
+
+BeginCmp
+TimeStamp = /550EC04E;
+Reference = C1;
+ValeurCmp = 100nF;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EC0E2;
+Reference = C2;
+ValeurCmp = 100nF;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EC10B;
+Reference = C3;
+ValeurCmp = 100nF;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EBFC1;
+Reference = C10;
+ValeurCmp = 1uF;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EDF31;
+Reference = C21;
+ValeurCmp = 680pF;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EE154;
+Reference = C22;
+ValeurCmp = 680pF;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EE1A8;
+Reference = C23;
+ValeurCmp = 680pF;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EB7C7;
+Reference = D10;
+ValeurCmp = blau;
+IdModule  = LEDs:LED-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55114BC4;
+Reference = H1;
+ValeurCmp = 3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /55114C71;
+Reference = H2;
+ValeurCmp = 3mm;
+IdModule  = Mounting_Holes:MountingHole_3mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /5513B090;
+Reference = P1;
+ValeurCmp = CONN_01X06;
+IdModule  = w_rf_modules:B6B-ZR;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EAAEC;
+Reference = R10;
+ValeurCmp = 220;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550ED88C;
+Reference = R21;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EDA9B;
+Reference = R22;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EDAE4;
+Reference = R23;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5513B3EE;
+Reference = TH1;
+ValeurCmp = THERMISTOR;
+IdModule  = Discret:R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EBD66;
+Reference = U1;
+ValeurCmp = DRV5013AD;
+IdModule  = packages:P-SSO-3-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EC74B;
+Reference = U2;
+ValeurCmp = DRV5013AD;
+IdModule  = packages:P-SSO-3-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /550EC77C;
+Reference = U3;
+ValeurCmp = DRV5013AD;
+IdModule  = packages:P-SSO-3-2;
+EndCmp
+
+EndListe

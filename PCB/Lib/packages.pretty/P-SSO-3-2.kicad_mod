@@ -1,8 +1,8 @@
-(module packages:P-SSO-3-2 (layer F.Cu) (tedit 55243A62)
+(module packages:P-SSO-3-2 (layer F.Cu) (tedit 553FB1A2)
   (fp_text reference U1 (at -0.071589 -3.06952 90) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.2)))
   )
-  (fp_text value DRV5013AD (at 1.27 -7.366) (layer F.SilkS) hide
+  (fp_text value DRV5013AD (at -1.481375 -14.491597) (layer F.SilkS) hide
     (effects (font (thickness 0.3048)))
   )
   (fp_line (start -0.7112 -1.524) (end -0.7112 1.524) (layer F.SilkS) (width 0.127))
@@ -11,9 +11,9 @@
   (fp_line (start -0.127 2.1082) (end 0.8128 2.1082) (layer F.SilkS) (width 0.127))
   (fp_line (start -0.127 2.1082) (end -0.7112 1.524) (layer F.SilkS) (width 0.127))
   (fp_line (start -0.127 -2.1082) (end -0.7112 -1.524) (layer F.SilkS) (width 0.127))
-  (pad 1 thru_hole rect (at 0 -1.27) (size 1.1 1.1) (drill 0.7) (layers *.Cu *.Mask F.SilkS))
-  (pad 2 thru_hole circle (at 0 0) (size 1.1 1.1) (drill 0.7) (layers *.Cu *.Mask F.SilkS))
-  (pad 3 thru_hole circle (at 0 1.27) (size 1.1 1.1) (drill 0.7) (layers *.Cu *.Mask F.SilkS))
+  (pad 1 thru_hole rect (at 0 -1.27) (size 1.5 1.1) (drill 0.7) (layers *.Cu *.Mask F.SilkS))
+  (pad 2 thru_hole oval (at 0 0) (size 1.5 1.1) (drill 0.7) (layers *.Cu *.Mask F.SilkS))
+  (pad 3 thru_hole oval (at 0 1.27) (size 1.5 1.1) (drill 0.7) (layers *.Cu *.Mask F.SilkS))
   (model C:/Users/Laptop-02/Documents/KiCad/Lib/packages3d/P-SSO-3-2.wrl
     (at (xyz 0 0 0))
     (scale (xyz 1 1 1))
