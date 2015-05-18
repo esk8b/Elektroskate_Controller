@@ -156,7 +156,7 @@ void setup()
   // Vorteil ist, dass die Abfragezeit der ADC unter einer 4us sinkt
   adc->startContinuous(Pin_Ubatt, ADC_0);               // Starte die Dauermessung der beiden
   adc->startContinuous(Pin_Strom, ADC_1);               // ADC im Hintergrund. Dies beschleunigt die Messwerterfassung um das
-  // 150 Fache. Auch hohe Average stören nicht mehr
+  // 150 Fache. Auch hohe Average stÃ¶ren nicht mehr
   // Die Abfrage der ADC muesste entsprechend angepasst werden
   adc->analogReadContinuous(ADC_0);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
   adc->analogReadContinuous(ADC_1);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
@@ -257,7 +257,7 @@ void TimerT3() {
   //time = millis();
   //Serial_DB.println(time);         // prints time since program started
   if (PairingStatus == HIGH) {
-    Funkabriss();                  // Nunchuk auslesen bei gleichzeitiger Prüfung auf Funkabriss
+    Funkabriss();                  // Nunchuk auslesen bei gleichzeitiger PrÃ¼fung auf Funkabriss
     Motorsteuerung();              // Motorsteuerung
     if (LICHTHUPE) Licht_Hupe();   // Licht und Hupe
     Hase_Igel();                   // Geschwindigkeitsumschaltung
@@ -358,14 +358,14 @@ void Motorsteuerung() {
   //       y-Achse <  UT: u= 0, v=-1, w=+1
   // UT <= y-Achse <  OT: u=+1, v= 0, w=-1
   //       y-Achse >= OT: u= 0, v=+1, w=+1
-  uint8_t a, b;              // Hilfsvariablen für die Überführung der Bereichserkennung in eine Rechenvorschrift
-  // Die Binärfaktoren a und b können dabei nur die Werte 0 und 1 annehmen, um gezielt unterschiedliche Terme der Berechnungsvorschrift zu aktivieren
+  uint8_t a, b;              // Hilfsvariablen fÃ¼r die ÃœberfÃ¼hrung der Bereichserkennung in eine Rechenvorschrift
+  // Die BinÃ¤rfaktoren a und b kÃ¶nnen dabei nur die Werte 0 und 1 annehmen, um gezielt unterschiedliche Terme der Berechnungsvorschrift zu aktivieren
   //       y-Achse <  UT: a=1 && b=0
   // UT <= y-Achse <  OT: a=0 && b=0
   //       y-Achse >= OT: a=0 && b=1
 
-  uint32_t StellWertMotorMaxUT;   //Maxialer Wertebereich für den Motorstellwert unterhalb UT
-  uint32_t StellWertMotorMaxOT;   //Maxialer Wertebereich für den Motorstellwert oberhalb OT
+  uint32_t StellWertMotorMaxUT;   //Maxialer Wertebereich fÃ¼r den Motorstellwert unterhalb UT
+  uint32_t StellWertMotorMaxOT;   //Maxialer Wertebereich fÃ¼r den Motorstellwert oberhalb OT
 
   if (DEBUG_Funktion) Serial_DB.println("Funktion: Motorsteuerung");
 
@@ -393,7 +393,7 @@ void Motorsteuerung() {
 
   if (zButton == LOW) {   // Gleichbehandlung von INTEGRATIONSSTEUERUNG UND DIRECT DRIVE bei losgelassenem Z-Knopf
     StellWertMotor = LeerlaufStellWertMotor;   // Freilauf des Motors sobald die Z-Taste losgelassen wird
-    if (a == 0 && b == 0) AbwurfGefahr = LOW;  // Direktes Bremsen darf nicht aus versehen ausgelöst werden
+    if (a == 0 && b == 0) AbwurfGefahr = LOW;  // Direktes Bremsen darf nicht aus versehen ausgelÃ¶st werden
     if (a == 1 && b == 0 && AbwurfGefahr == LOW) { // Direktes Abbremsen wenn zusaetzlich der untere Totpunkt unterschritten wird
       StellWertMotor = LeerlaufStellWertMotor + sgnY_UT * pow(abs(Y_UT), YAchseExpNeg) / pow(YAchseUT_12bit, YAchseExpNeg) * StellWertMotorMaxUT;
     }
@@ -410,7 +410,7 @@ void Motorsteuerung() {
       Serial_DB.println(Reduktionsfaktor);
     }
   }
-  StellWertMotorAlt = StellWertMotor;  // Referenzwert für die kontinuierliche Reduktion des Motorstellwertes bei Überstrom
+  StellWertMotorAlt = StellWertMotor;  // Referenzwert fÃ¼r die kontinuierliche Reduktion des Motorstellwertes bei Ãœberstrom
 
   analogWrite(Pin_Motorstelleranschluss_A, StellWertMotor);   // Geschwindigkeitsvorgabe Motor-A in PWM-Register setzen
   analogWrite(Pin_Motorstelleranschluss_B, StellWertMotor);   // Geschwindigkeitsvorgabe Motor-B in PWM-Register setzen
@@ -543,13 +543,13 @@ void UIMessung() {
   //time = micros()-time;
   //Serial_DB.println(time);
   Strom[StromIndex] = (adc->analogReadContinuous(ADC_1) * StromFaktor) - Strom0A; // Strom in A messen und in Array ablegen
-  Momentanleistung = Ubatt * Strom[StromIndex];        // Berechnung der Momentanleistung
+  Momentanleistung = UBatPoly * Strom[StromIndex];     // Berechnung der Momentanleistung
   StromIndex++;                                        // StromIndex increment
   if (StromIndex > 9) StromIndex = 0;                  // 10 Messwerte im Kreis messen
   Leistung = Leistung + Momentanleistung / LeistungNorm; // Berechnung der insgesamt umgesetzten Stundenleistungsberechnung
   if (DEBUG_Messung) {
     Serial_DB.print("Spannung: ");
-    Serial_DB.println(Ubatt);
+    Serial_DB.println(UBatPoly);
     Serial_DB.print("Strom: ");
     Serial_DB.println(Strom[0]);
   }
@@ -559,7 +559,7 @@ FASTRUN void UIausgeben() {
   // Ausgabe der Messwerte ueber die Serielle und oder Bluetooth
   if (DEBUG_Funktion) Serial_DB.println("Funktion: UIausgeben");
   //time = micros();
-  Serial_BT.print(Ubatt, 3);             // Spannung ausgeben
+  Serial_BT.print(UBatPoly, 3);             // Spannung ausgeben
   Serial_BT.print("V, ");
   Serial_BT.print(Iaverage(), 3);        // Durchschnittsstrom ausgeben
   Serial_BT.print("A, ");
@@ -610,3 +610,4 @@ float Temperaturmessung(uint8_t TempSensor, uint8_t TempSensorAnzahl, uint8_t Te
 
   return celsius;
 }
+

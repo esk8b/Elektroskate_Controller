@@ -1,4 +1,4 @@
-// Version v41p0
+// Version v41p3
 // Serielle Geschwindigkeit
 #define BT_BAUDRATE    (uint32_t) 230400      // Datenrate fuer das Bluetooth Modul, ggf. fuer ein anderes BT-Modul anpassen, Ausgabe ueber Serielle Schnittstelle 1
 #define DEBUG_BAUDRATE (uint32_t) 230400      // Datenrate fuer das Debugging in der Arduino IDE per USB
@@ -12,7 +12,7 @@
 #define YAchseUT               124 // Wert der Nunchuk Y-Achse unterhalb dessen die Beschleunigung zurueckgenommen wird(Integrationssteuerung) (0..65535, 115..124)
 #define YAchseOT               145 // Wert der Nunchuk Y-Achse oberhalb dessen beschleunigt wird(Integrationssteuerung) (0..65535, 141..145)
 
-// Plausibilitätscheck und ggf. Korrektur
+// PlausibilitÃ¤tscheck und ggf. Korrektur
 #if YAchseUT > YAchseNeutral
   #define (uint16_t) YAchseUT (uint16_t) YAchseNeutral
 #endif
@@ -61,8 +61,16 @@ uint32_t DirectDrive            = false; // TRUE -> Direct Drive, FALSE -> Integ
 #define BattSpgMMax (float) 32.7 // Maximale messbare Batterienspannung 33V (10k Ohm / 2 x 180k Ohm), oder 40V (10k Ohm / 121k Ohm) 
 #define StromMMax   (float) 50.0 // Maximal messbarer Strom in A (ACS756SCA-050B Stromsensor)
 
+// Die Spanungsmessung ist nicht linear daher Polynom dritter Ordnung
+#define PolynomX0 (float) 24.744834   // Polynom Koeffizient X0
+#define PolynomX1 (float) 3.8060089   // Polynom Koeffizient X1
+#define PolynomX2 (float) 0.1118917   // Polynom Koeffizient X2
+#define PolynomX3 (float) 0.0015586   // Polynom Koeffizient X3
+#define UBatPoly (float) ( PolynomX3 * pow(Ubatt,3) - PolynomX2 * pow(Ubatt,2) + PolynomX1 * Ubatt - PolynomX0 )
+
 // Strombegrenzung und Kurzschlusserkennung
 #define Ishort (uint16_t)     50   // Maximaler Strom, dieser fuehrt zur sofortigen Abschaltung (<= StromMMax)
 #define Imax   (uint16_t)     40   // Grenzwert, ab dem die Strombegrenzung einsetzt
-#define Strom0A (float)       50.25 // 0A Messwert, wird angezeigt wenn kein Strom fliesst und Strom0A = 0 (muss kalibriert werden)
+#define Strom0A (float)       50.45 // 0A Messwert, wird angezeigt wenn kein Strom fliesst und Strom0A = 0 (muss kalibriert werden)
+
 
