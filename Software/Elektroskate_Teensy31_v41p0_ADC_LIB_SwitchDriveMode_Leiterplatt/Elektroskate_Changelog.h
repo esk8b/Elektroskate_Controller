@@ -46,7 +46,7 @@ Revision
 		                 Kommentare mit ### im Header enthalten HW-spezifische Werte, die vom Nutzer angepasst werden sollten
  3.3P5 03.06.2014 Barney: Cleanup der Kommentare, Berechnung von Strom, Spannung und Leistung funktioniert jetzt mit dem Teensy richtig.
  3.4P1 05.06.2014 Barney: Fuer die vereinfachte Konfiguration sind jetzt Custom_Settings und Parameters in eine eigene Datei ausgelagert worden.
-                          Überstromroutine überprüft.
+                          Ãœberstromroutine Ã¼berprÃ¼ft.
  3.4P2 08.06.2014 Barney: Steuerung funktioniert jetzt wieder. Unnoetige nunchuk.init wurden entfernt. Es werden durch die Nunchuk abfrage nur 20 Motorstellwerte/s erzeugt. Spaetere Version mit Teensy optimierter Lib ist angestrebt.
                           Messungen sind O.K.
                           Strombegrenzung nicht optimal, wird noch nachgearbeitet. Es fehlte ein if () wenn gembremst wird sollte die Strombegrenzung nicht die Bremse abschalten. Beim fahren klappt die Strombegrenzung nicht so optimal.
@@ -57,26 +57,29 @@ Revision
                           Die Berechnung des Motorstellwertes wird jetzt durch den Timer3 zeitlich festgelegt. Durch das Weglassen einer unnoetigen Nunchuk Abfrage und Umstellung der (wieder) Verbindung zum Nunchuk im Sekundentakt, ist ein 
                           zeitliches Aequidistantes Steuern den Motors moeglich.
  3.4P6 19.07.2014 Dude:   Umstellung des Wertebereiches der X- und Y-Achse auf 12 bit Zahlenraum von 0 bis 4095. Damit kompatibel zum Einsatz einer anderen HW als Nunchuk zur Sollwertvorgabe.
-                          Beschleunigungs- und Bremsvorgabe im DirectDrive- und im Tempomat-Modus über eine Kennlinie (Potenzfunktion mit frei wählbarem Exponenten für beide Bereiche)
+                          Beschleunigungs- und Bremsvorgabe im DirectDrive- und im Tempomat-Modus Ueber eine Kennlinie (Potenzfunktion mit frei waehlbarem Exponenten fuer beide Bereiche)
                           Neutralzone der Y-Achse konsistenz zum Tempomat jetzt auch im DirectDrive implementiert
-                          Konsolidierung der Stellwertberechnung für den Motor, DirectDrive und Tempomateinstellung in einer Berechnungsvorschrift integriert (vermeidet Fehler)
+                          Konsolidierung der Stellwertberechnung fuer den Motor, DirectDrive und Tempomateinstellung in einer Berechnungsvorschrift integriert (vermeidet Fehler)
                           Abwurfgefahr durch versehentliches Loslassen des Z-Knopfes beim Verringern der Geschwindigkeit, d.h. Sprungfunktion ins Bremsen, wird detektiert und abgefangen					  
- 3.4P7 23.07.2014 Barney: Schnittstellen fuer Debug- und Datenausgabe getrennt. Beide können über Bluetooth, USB oder getrennte Schnitstellen fuer die Ausgabe nutzen.
+ 3.4P7 23.07.2014 Barney: Schnittstellen fuer Debug- und Datenausgabe getrennt. Beide koennen Ueber Bluetooth, USB oder getrennte Schnitstellen fuer die Ausgabe nutzen.
                           Anschluesse werden jetzt in Elektroskate_Connection festgelegt. Anpassung auf die Leiterplatte Elektroskate_Teensy V1.0 wurde durchgefuert.
  3.4P8 26.07.2014 Barney: Die Verbinnden Routine hat die ISR blockiert und damit die Messungen ausser Kraft gesetzt. Durch die Integration von verbinden() in die Loop Schhleife, koennen die drei ISR wieder richtig arbeiten
                           Zum Testen wurde die Temperaturmessung() so umgeschrieben, dass eine richtige Parameteruebergabe durchgefuerht wird. Damit ist ein Erkennen der benoetigten Parameter besser moeglich. Siehe Temperaturmessung(TempSensor, defTempSensorAnzahl,defTempAddress)
                           Erste Ansaetze alle Werteausgaben zentral in die TimerTx ISR einzubetten. Eine Ausgabe der Werte an die Serielle Schnittstelle dezentral ist schlecht wartbar. Es soll an zentraler Stelle die Ausgabe erfolgen. Dies ist die Vorbereitung fuer
                           die eigenen BT-Fernbedienung.
                           Die Dateien Elektroskate_x.h wurden mit einer Versionsnummer versehen, um Anpassungen der Inhalte erkennen zu koennen. D.h. Wenn neue Parameter definiert werden oder Bezeichungen sich veraendern, muss die Version erkennbar sein.
- 3.4P9 14.09.2014 Barney: UREF mit 3.3V gelöscht, da diese Variable nicht genutzt wird.
+ 3.4P9 14.09.2014 Barney: UREF mit 3.3V geloescht, da diese Variable nicht genutzt wird.
  3.4P9-15.09.2014 Barney: ADC-Lib zugefuegt. Es besteht damit die Moeglichkeit den ADC viel besser zu steuern. Die Spannungs- und Strommessung wurde damit deutlich verbessert.
  4.0p9-01.11.2014 Barney: ES kann waehrend der Fahrt zwischen DirectDrive und IntegralDrive umgeschaltet werden. Die Config-Dateien wurden angepasst!
- Ankündigung: Dwe ADC fuer die Strommessung zieht einen Pin weiter. Damit kann dann im Hintergrung gemessen werden. Die neue Leiterplatte wird entsprechend angepasst! Es kommt auch ein/zwei Anschluesse fuer Bremsservos und ein Bremslicht dazu.
+                          Ankuendigung: Dwe ADC fuer die Strommessung zieht einen Pin weiter. Damit kann dann im Hintergrung gemessen werden. Die neue Leiterplatte wird entsprechend angepasst! 
+                          Es kommt auch ein/zwei Anschluesse fuer Bremsservos und ein Bremslicht dazu.
  
  4.1p0-28.12.2014 Barney: Die Leiterplattenversion v2.5 hat jetzt den Stromsensor an A2. Dadurch kann die ADC-Lib die beiden ADCs getrennt im Teensy parametrieren.
-                          Durch die neue Leiterplatte wird der Temperatursensor und die beiden HV-Anschlüsse mit 3.3V versorgt.
-						  
-4.1p0-15.01.2015		  Die Strom und Spannungsmessung erfolgt jetzt über die zwei eingebauten ADC-Kanäle ADC_0 und ADC_1. 
-						  Die Mittelwertbildung wurde von 8 auf 32 angehoben. Eine Messung würde 433µs dauern, es wurde aber die Asynchrone Messung aktiviert. Der Teensy muss jetzt nicht mehr auf den ADC warten. Das Abholen des Messwertes dauert nur noch 2-3µs.
-
+                          Durch die neue Leiterplatte wird der Temperatursensor und die beiden HV-Anschluesse mit 3.3V versorgt.						  
+ 4.1p0-15.01.2015 Barney: Die Strom und Spannungsmessung erfolgt jetzt Ueber die zwei eingebauten ADC-Kanaele ADC_0 und ADC_1. 
+			  Die Mittelwertbildung wurde von 8 auf 32 angehoben. Eine Messung wuerde 433µs dauern, es wurde aber die Asynchrone Messung aktiviert. Der Teensy muss jetzt nicht mehr auf den ADC warten. Das Abholen des Messwertes dauert nur noch 2-3Âµs.
+ 4.1p1-31.01.2015 Barney: Umstellung auf die Nunchuk Teensy Lib (angepasst aud Teensy 3.1)
+ 4.1p2-21.03.2015 Barney: Anpassung an Arduino IDE 1.63 und Teensyduino 1.22 (TRUE->true usw.) 
+4.1p3-17.05.2015 Barney:  Polynom für die Spannungsmessung eingeführt. Damit konnte die Messgenauigkeit der Spannungsmessung auf 50mV gesteigert werden.
                   
+
