@@ -37,7 +37,7 @@ Pin D12 -> PWM Ausgang zum Schalten des Leistungs-MOSFET fuer die Stromversorgun
 
 // Anschluesse Teensy definieren
 // Messanschluesse
-#define Pin_Strom A2                     // Pin A2 Strom. Wichtig fuer die ADC-Lib! durch die Nutzung von A0 und A2 können die beiden ADCs im Teensy getrennt angeprochen und paramertiert werden.
+#define Pin_Strom A2                     // Pin A2 Strom. Wichtig fuer die ADC-Lib! durch die Nutzung von A0 und A2 kÃ¶nnen die beiden ADCs im Teensy getrennt angeprochen und paramertiert werden.
 #define Pin_Ubatt A0                     // Pin A0 Spannnung
 #define Pin_Temperaturanschluss 13       // Pin D13 Temperaturmessung DS1820 BUS. Die Messbausteine mit 3.3V und Masse versorgen. (Leiterplatte V2.5 macht das)
 OneWire ds(Pin_Temperaturanschluss);     // den oben definierten Pin zuweisen
@@ -55,4 +55,5 @@ OneWire ds(Pin_Temperaturanschluss);     // den oben definierten Pin zuweisen
 #define Pin_Bremse 6                     // Pin D6 Ausgang fuer Bremslicht
 // Anti-Spark Schaltung
 #define Pin_PowerSwitch 12               // Pin D12 Ausgang PWM zum Einschalten des Leistungsteils mittels MOSFET oder BTS555
+
 
