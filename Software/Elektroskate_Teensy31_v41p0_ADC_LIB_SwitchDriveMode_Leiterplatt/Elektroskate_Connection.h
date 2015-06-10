@@ -1,4 +1,4 @@
-// Version v41p0
+// Version v41p4
 /*
 Beschaltung
 -----------
@@ -31,13 +31,11 @@ Pin D5  -> Blinker_R (MOSFET IRLU2905 vorschalten und 1K Ohm Widerstand zum Gate
  
 Pin D12 -> PWM Ausgang zum Schalten des Leistungs-MOSFET fuer die Stromversorgung des Motorreglers (langsames Hochfahren)
            Wegen der 3.3V am Teensy und der Stroeme wird ein Optokoppler (CNY74-2) zum sicheren Schalten des MOSFETs (IRFP3206) empfolen
-           
-  
 */           
 
 // Anschluesse Teensy definieren
 // Messanschluesse
-#define Pin_Strom A2                     // Pin A2 Strom. Wichtig fuer die ADC-Lib! durch die Nutzung von A0 und A2 kÃ¶nnen die beiden ADCs im Teensy getrennt angeprochen und paramertiert werden.
+#define Pin_Strom A2                     // Pin A2 Strom. Wichtig fuer die ADC-Lib! durch die Nutzung von A0 und A2 koennen die beiden ADCs im Teensy getrennt angeprochen und paramertiert werden.
 #define Pin_Ubatt A0                     // Pin A0 Spannnung
 #define Pin_Temperaturanschluss 13       // Pin D13 Temperaturmessung DS1820 BUS. Die Messbausteine mit 3.3V und Masse versorgen. (Leiterplatte V2.5 macht das)
 OneWire ds(Pin_Temperaturanschluss);     // den oben definierten Pin zuweisen
@@ -46,7 +44,7 @@ OneWire ds(Pin_Temperaturanschluss);     // den oben definierten Pin zuweisen
 // Motorsteller und Servos
 #define Pin_Motorstelleranschluss_A A9   // Pin A9 Motorsteller_A PWM-Anschluss
 #define Pin_Motorstelleranschluss_B A8   // Pin A8 Motorsteller_B PWM-Anschluss
-#define Pin_Brems_Servo A6               // Pin A3 Brems_Servo PWM-Anschluss
+#define Pin_Brems_Servo A6               // Pin A6 Brems_Servo PWM-Anschluss
 // MOSFET-Ausgaenge
 #define Pin_Hupe  3                      // Pin D3 Ausgang fuer die Hupe
 #define Pin_Licht 11                     // Pin D11 Ausgang fuer Licht an aus
@@ -55,5 +53,3 @@ OneWire ds(Pin_Temperaturanschluss);     // den oben definierten Pin zuweisen
 #define Pin_Bremse 6                     // Pin D6 Ausgang fuer Bremslicht
 // Anti-Spark Schaltung
 #define Pin_PowerSwitch 12               // Pin D12 Ausgang PWM zum Einschalten des Leistungsteils mittels MOSFET oder BTS555
-
-

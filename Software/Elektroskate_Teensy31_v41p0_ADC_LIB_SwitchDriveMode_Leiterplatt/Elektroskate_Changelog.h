@@ -8,11 +8,12 @@ Funktionen
  6. C-Taste + Nunchuk X neutral         -> Hupe (getastet)
  7. C-Taste + Nunchuk X links           -> Licht (geschaltet)
  8. 3 x Z-Taste + Nunchuk X links       -> Geschwindingkeitsumschaltung Hase / Igel
- 8. Funkabriss                          -> Motor Freilauf
- 9. Temperaturmessung
-10. Messung von Strom und Akkuspannung mit Bestimmung der umgesetzten Momentanleistung und Gesamtleistung
+ 9. 3 x Z-Taste + Nunchuk X rechts      -> Umschaltung Direct Drive / Tempomat
+10. Funkabriss                          -> Motor Freilauf
+11. Temperaturmessung
+12. Messung von Strom und Akkuspannung mit Bestimmung der umgesetzten Momentanleistung und Gesamtleistung
 
-Revision
+ Revision
  --------
  V1.0 02.12.2012 Barney:
  V1.1 08.02.2013 Barney: Subroutinen eingefuehrt und Bluetooth Schnittstelle vorbereiten
@@ -34,19 +35,19 @@ Revision
  V3.1 06.10.2013 Barney: Start im Igelmodus
 
  !!! Teensy 3.1 Umstellung !!!
- V3.2 13.04.2014 Barney: Umstellung auf Teensy 3.1, sowie #define fuer Berechnung und Konstanten. Umstellen der Aufloesung ADC / DAC und TimerISR-Routinen
- V3.3 11.05.2014 Barney: Es werden drei ISR verwendet mit 1Hz, 10Hz und 100Hz Takt. Constanten auf define umgestellt, Anpassung der PWM an Teensy Aufloesung, uint16_t als Vorgabe fuer 16Bit Werte
-                         Neue Nunchuk Lib angepasst auf Wire und Wireless Nunchuk, alles noch ungetestet!
- V3.3P4 11.05.2014 Dude: zentrales Debug-Flag
-                         HW-Konfigurationen ueber Preprozessor Steuerungen aktivierbar 
- 		                 Hase_Igel von Licht_Hupe getrennt
-		                 nunchuk.init in Nunchuk_auslesen aufgenommen (wird daher immer beim auslesen ausgefuehrt)
-		                 Aufloesung Nunchuck analogY in 2 Bereiche (Minimalwert y-Achse / Neutralstellung / Maximalwert y-Achse ganz oben) 
-		                 geteilt -> Motorstellwert Leerlauf bleibt damit beim Druecken der Z-Taste erhalten;
-		                 Kommentare mit ### im Header enthalten HW-spezifische Werte, die vom Nutzer angepasst werden sollten
+ V3.2 13.04.2014 Barney:  Umstellung auf Teensy 3.1, sowie #define fuer Berechnung und Konstanten. Umstellen der Aufloesung ADC / DAC und TimerISR-Routinen
+ V3.3 11.05.2014 Barney:  Es werden drei ISR verwendet mit 1Hz, 10Hz und 100Hz Takt. Constanten auf define umgestellt, Anpassung der PWM an Teensy Aufloesung, uint16_t als Vorgabe fuer 16Bit Werte
+                          Neue Nunchuk Lib angepasst auf Wire und Wireless Nunchuk, alles noch ungetestet!
+ V3.3P4 11.05.2014 Dude:  zentrales Debug-Flag
+                          HW-Konfigurationen ueber Preprozessor Steuerungen aktivierbar 
+                          Hase_Igel von Licht_Hupe getrennt
+                          nunchuk.init in Nunchuk_auslesen aufgenommen (wird daher immer beim auslesen ausgefuehrt)
+                          Aufloesung Nunchuck analogY in 2 Bereiche (Minimalwert y-Achse / Neutralstellung / Maximalwert y-Achse ganz oben) 
+                          geteilt -> Motorstellwert Leerlauf bleibt damit beim Druecken der Z-Taste erhalten;
+                          Kommentare mit ### im Header enthalten HW-spezifische Werte, die vom Nutzer angepasst werden sollten
  3.3P5 03.06.2014 Barney: Cleanup der Kommentare, Berechnung von Strom, Spannung und Leistung funktioniert jetzt mit dem Teensy richtig.
  3.4P1 05.06.2014 Barney: Fuer die vereinfachte Konfiguration sind jetzt Custom_Settings und Parameters in eine eigene Datei ausgelagert worden.
-                          Ãœberstromroutine Ã¼berprÃ¼ft.
+                          Ueberstromroutine ueberprüft.
  3.4P2 08.06.2014 Barney: Steuerung funktioniert jetzt wieder. Unnoetige nunchuk.init wurden entfernt. Es werden durch die Nunchuk abfrage nur 20 Motorstellwerte/s erzeugt. Spaetere Version mit Teensy optimierter Lib ist angestrebt.
                           Messungen sind O.K.
                           Strombegrenzung nicht optimal, wird noch nachgearbeitet. Es fehlte ein if () wenn gembremst wird sollte die Strombegrenzung nicht die Bremse abschalten. Beim fahren klappt die Strombegrenzung nicht so optimal.
@@ -57,7 +58,7 @@ Revision
                           Die Berechnung des Motorstellwertes wird jetzt durch den Timer3 zeitlich festgelegt. Durch das Weglassen einer unnoetigen Nunchuk Abfrage und Umstellung der (wieder) Verbindung zum Nunchuk im Sekundentakt, ist ein 
                           zeitliches Aequidistantes Steuern den Motors moeglich.
  3.4P6 19.07.2014 Dude:   Umstellung des Wertebereiches der X- und Y-Achse auf 12 bit Zahlenraum von 0 bis 4095. Damit kompatibel zum Einsatz einer anderen HW als Nunchuk zur Sollwertvorgabe.
-                          Beschleunigungs- und Bremsvorgabe im DirectDrive- und im Tempomat-Modus Ueber eine Kennlinie (Potenzfunktion mit frei waehlbarem Exponenten fuer beide Bereiche)
+                          Beschleunigungs- und Bremsvorgabe im DirectDrive- und im Tempomat-Modus über eine Kennlinie (Potenzfunktion mit frei waehlbarem Exponenten fuer beide Bereiche)
                           Neutralzone der Y-Achse konsistenz zum Tempomat jetzt auch im DirectDrive implementiert
                           Konsolidierung der Stellwertberechnung fuer den Motor, DirectDrive und Tempomateinstellung in einer Berechnungsvorschrift integriert (vermeidet Fehler)
                           Abwurfgefahr durch versehentliches Loslassen des Z-Knopfes beim Verringern der Geschwindigkeit, d.h. Sprungfunktion ins Bremsen, wird detektiert und abgefangen					  
@@ -73,13 +74,16 @@ Revision
  4.0p9-01.11.2014 Barney: ES kann waehrend der Fahrt zwischen DirectDrive und IntegralDrive umgeschaltet werden. Die Config-Dateien wurden angepasst!
                           Ankuendigung: Dwe ADC fuer die Strommessung zieht einen Pin weiter. Damit kann dann im Hintergrung gemessen werden. Die neue Leiterplatte wird entsprechend angepasst! 
                           Es kommt auch ein/zwei Anschluesse fuer Bremsservos und ein Bremslicht dazu.
- 
  4.1p0-28.12.2014 Barney: Die Leiterplattenversion v2.5 hat jetzt den Stromsensor an A2. Dadurch kann die ADC-Lib die beiden ADCs getrennt im Teensy parametrieren.
-                          Durch die neue Leiterplatte wird der Temperatursensor und die beiden HV-Anschluesse mit 3.3V versorgt.						  
- 4.1p0-15.01.2015 Barney: Die Strom und Spannungsmessung erfolgt jetzt Ueber die zwei eingebauten ADC-Kanaele ADC_0 und ADC_1. 
-			  Die Mittelwertbildung wurde von 8 auf 32 angehoben. Eine Messung wuerde 433µs dauern, es wurde aber die Asynchrone Messung aktiviert. Der Teensy muss jetzt nicht mehr auf den ADC warten. Das Abholen des Messwertes dauert nur noch 2-3Âµs.
- 4.1p1-31.01.2015 Barney: Umstellung auf die Nunchuk Teensy Lib (angepasst aud Teensy 3.1)
+                          Durch die neue Leiterplatte wird der Temperatursensor und die beiden HV-Anschluesse mit 3.3V versorgt.
+						  Fix für alte Leiterplatten vor v2.5 im Wiki http://www.elektro-skateboard.de/wiki/bambam/bambam-boardcontroller-loeten
+ 4.1p0-15.01.2015 Barney: Die Strom und Spannungsmessung erfolgt jetzt ueber die zwei eingebauten ADC-Kanaele ADC_0 und ADC_1. 
+			              Die Mittelwertbildung wurde von 8 auf 32 angehoben. Eine Messung wuerde 433µs dauern, es wurde aber die asynchrone Messung aktiviert. Der Teensy muss jetzt nicht mehr auf den ADC warten. Das Abholen des Messwertes dauert nur noch 2-3µs.
+ 4.1p1-31.01.2015 Barney: Umstellung auf die Nunchuk Teensy Lib (angepasst auf Teensy 3.1)
  4.1p2-21.03.2015 Barney: Anpassung an Arduino IDE 1.63 und Teensyduino 1.22 (TRUE->true usw.) 
-4.1p3-17.05.2015 Barney:  Polynom für die Spannungsmessung eingeführt. Damit konnte die Messgenauigkeit der Spannungsmessung auf 50mV gesteigert werden.
-                  
-
+ 4.1p3-17.05.2015 Barney: Polynom für die Spannungsmessung eingeführt. Damit konnte die Messgenauigkeit der Spannungsmessung auf 50mV gesteigert werden.
+ 4.1p4-28.05.2015 Dude  : DEBUG-Flag aus Settings.h entfernt, da ohne Verwendung. Verallgemeinerung der Ausgabe auf 2 generelle Ausgabekanle (USBSerial und BT)
+                          Update Kommentare
+                          Motorsteller-Offset wieder eingefuegt (zeigt nicht den gewuenschten Effekt, obwohl der Motorstellwert korrekt erhoeht wird, ist noch zu ueberpruefen)
+                          Umschaltung DriveMode und Stellwerbegrenzung ist gegen versehentliches Umschalten geschuetzt (muss innerhalb einer vorgegebenen Zeit statt finden)
+                          Korrekturpolynom fuer 42,9 V Messbereich ergaenzt

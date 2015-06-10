@@ -15,7 +15,6 @@
  You should have received a copy of the GNU General Public License along with this program;
  if not, see <http://www.gnu.org/licenses/>.
 
-
  Dieses Programm ist freie Software. Sie koennen es unter den Bedingungen der GNU General Public License,
  wie von der Free Software Foundation veroeffentlicht, weitergeben und/oder modifizieren,
  entweder gemaess Version 3 der Lizenz oder (nach Ihrer Option) jeder spaeteren Version.
@@ -26,35 +25,33 @@
 
  Sie sollten ein Exemplar der GNU General Public License zusammen mit diesem Programm
  erhalten haben. Falls nicht, siehe <http://www.gnu.org/licenses/>.
-
  */
 
 // Libraries
-//#include <Wire.h>                       // i2c Lib fuer 2 Wire Protokoll(fuer Nunchuck benoetigt)
-#include <i2c_t3.h>                       // Teensy optimierte i2c Lib fuer 2 Wire Protokoll(fuer Nunchuck benoetigt)
-#include <NunchukTeensy.h>                // Lib fuer Nunchuk auslesen modifiziert von Barney (modifizierte Wii Lib) 
-#include <OneWire.h>                      // Lib um Dallas Temperaturbausteine auszulesen von http://www.pjrc.com/teensy/arduino_libraries/OneWire.zip
-#include <ADC.h>                          // http://forum.pjrc.com/threads/25532-ADC-library-update-now-with-support-for-Teensy-3-1
-#include "Elektroskate_Custom_Settings.h" // Festlegen des Debugging und der Funktionalitaeten wie Messungen usw.
+#include <i2c_t3.h>                         // Teensy optimierte i2c Lib fuer 2 Wire Protokoll (fuer Nunchuck benoetigt, statt Wire.h)
+#include <NunchukTeensy.h>                  // Lib fuer Nunchuk auslesen modifiziert von Barney (modifizierte Wii Lib) 
+#include <OneWire.h>                        // Lib um Dallas Temperaturbausteine auszulesen von http://www.pjrc.com/teensy/arduino_libraries/OneWire.zip
+#include <ADC.h>                            // http://forum.pjrc.com/threads/25532-ADC-library-update-now-with-support-for-Teensy-3-1
+#include "Elektroskate_Custom_Settings.h"   // Festlegen des Debugging und der Funktionalitaeten wie Messungen usw.
 #include "Elektroskate_Custom_Parameters.h" // Festlegen der persoenlichen Werte
-#include "Elektroskate_Connection.h"      // Festlegen der elektrischen Anschluesse
+#include "Elektroskate_Connection.h"        // Festlegen der elektrischen Anschluesse
 
 // Definition der ISR Zeitroutinen
-IntervalTimer timer_1;                    // 1 Sekunden Timer (z.B. Ausgabe von Messwerten, Temperaturmessung)
-IntervalTimer timer_2;                    // 0.1 Sekunden Timer (z.B. Messung von Spannungs- und Stromwerten und Nunchuk Daten)
-IntervalTimer timer_3;                    // 0.05 Sekunden Timer (Motorsteuerung, Umschaltung Licht/Hupe, Hase Igel, DirektDrive,...)
+IntervalTimer timer_1;                     // 1 Sekunden Timer (Ausgabe von Messwerten, Temperaturmessung, ...)
+IntervalTimer timer_2;                     // 0.1 Sekunden Timer (Messung von Spannungs- und Stromwerten und Nunchuk Daten, ...)
+IntervalTimer timer_3;                     // 0.05 Sekunden Timer (Motorsteuerung, Umschaltung Licht/Hupe, Hase Igel, DirektDrive, ...)
 
 // Definition der ADC / DAC Eigenschaften
-#define AnalogReadResolutionBits 12       // Bit-Aufloesung fuer die Analog Digital Umsetzer (ADC) zur Strom- und Spannungsmessung
+#define AnalogReadResolutionBits 12        // Bit-Aufloesung fuer die Analog Digital Umsetzer (ADC) zur Strom- und Spannungsmessung
 #define AnalogReadResolutionValue (uint32_t) pow(2,AnalogReadResolutionBits)   // Festlegen der ADC-Aufloesung (Wertebereich)
 #define AnalogAveraging 32                 // Durchschnittswert bei der ADC-Messung bilden
-#define AnalogWriteResolutionBits 16      // Bit-Aufloesung fuer die Digital Analog Umsetzer (DAC)fuer die PWM-Ansteuerung des Motorstellers (Servo)
+#define AnalogWriteResolutionBits 16       // Bit-Aufloesung fuer die Digital Analog Umsetzer (DAC) fuer die PWM-Ansteuerung des Motorstellers (Servo)
 #define AnalogWriteResolutionValue (uint32_t) pow(2,AnalogWriteResolutionBits) // Festlegen der DAC-Aufloesung (Wertebereich)
+
+ADC *adc = new ADC();                      // adc object
 
 // Nunchuk - Steuerparameter Sollwertvorgabe und Programmablaufsteuerung
 Nunchuk nunchuk = Nunchuk();
-
-ADC *adc = new ADC(); // adc object
 
 uint16_t analogX = 0;
 uint16_t analogY = 0;
@@ -86,26 +83,28 @@ uint16_t accelXAlt = 0;                // Alter Beschleunigungswert X fuers Pair
 #define ObererStellWertMotorIgel (uint32_t) float(PWM_ObererStellWertMotorIgel*AnalogWriteResolutionValue*PWMFrequenz/1000) // Wert berechnen fuer Oebere Pulsweite Igel (1.7ms Pulsweite)
 #define ObererStellWertMotorHase (uint32_t) float(PWM_ObererStellWertMotorHase*AnalogWriteResolutionValue*PWMFrequenz/1000) // Wert berechnen fuer Oebere Pulsweite Hase (2.0ms Pulsweite)
 
+// Steuermodus bei Programmstart ist inkrementell (Tempomat) und muss initialisiert werden
 uint32_t BremsDaempfungUmschalt           = BremsDaempfung;
 uint32_t BeschleunigungsDaempfungUmschalt = BeschleunigungsDaempfung;
 
-//#if DirectDrive
-#define LeerlaufStellWertMotor   (uint32_t) float(PWM_LeerlaufStellWertMotor*AnalogWriteResolutionValue*PWMFrequenz/1000) // Wert berechnen fuer Leerlauf (1.5ms Pulsweite)
-//#else
-//  #define LeerlaufStellWertMotor   (uint32_t) float(PWM_LeerlaufStellWertMotor*AnalogWriteResolutionValue*PWMFrequenz/1000) + LeerlaufOffset // Wert berechnen fuer Leerlauf (1.5ms Pulsweite)
-//#endif
+// Motorstellwerte (Leerlaufstellwert muss wegen Offset-Feature je nach DriveMode neu initialisiert werden)
+uint32_t LeerlaufStellWertMotor = float(PWM_LeerlaufStellWertMotor*AnalogWriteResolutionValue*PWMFrequenz/1000) + (LeerlaufOffset * !DirectDrive); // Wert berechnen fuer Leerlauf (1.5ms Pulsweite)
 #define UntererStellWertMotor    (uint32_t) float(PWM_UntererStellWertMotor*AnalogWriteResolutionValue*PWMFrequenz/1000) // Wert berechnen fuer untersten Wert (1.0ms Pulsweite)
 
-// Welcher Modus soll gestartet werden
+// Geschwindigkeitsbegrenzung bei Programmstart (Hase/Igel)
 uint32_t ObererStellWertMotor = ObererStellWertMotorIgel;  // Im Igel Modus starten
 uint8_t  ObererStellWertMotorUmschaltCounter = 0;          // Zaehler fuer die Umschaltung Hase Igel (HI)
-
 uint8_t  DriveModeUmschaltCounter = 0;                     // Zaehler fuer die Umschaltung DirectDrive/ IntegralDrive
+uint32_t MaxUmschaltDauer = 2000;                          // Maximal Zeit [ms] innerhalb der ein Umschaltvorgang beendet sein muss
 
 uint32_t StellWertMotor    = LeerlaufStellWertMotor; // Alle Werte fuer den Motor werden auf Leerlauf eingestellt
 uint32_t StellWertMotorAlt = LeerlaufStellWertMotor; // Wird fuer den Ueberstromfall bennoetigt Alle Werte fuer den Motor werden auf Leerlauf eingestellt
 
 uint16_t AbwurfGefahr = LOW;   // Soll versehentliches Abbremsen aus voller Fahrt verhindern
+
+// Bremsenstellwerte
+#define StellWertBremse_max (uint32_t) float(PWM_Bremse_Vollbremse*AnalogWriteResolutionValue*PWMFrequenz/1000) // Wert berechnen fuer volle Bremswirkung (2.0ms Pulsweite)
+#define StellWertBremse_off (uint32_t) float(PWM_Bremse_Ungebremst*AnalogWriteResolutionValue*PWMFrequenz/1000) // Wert berechnen fuer Brems aus (1.0ms Pulsweite)
 
 // Temperatursensoren
 uint16_t TempSensor;
@@ -142,24 +141,23 @@ void setup()
   adc->setReference(ADC_REF_EXTERNAL, ADC_0);           // Bei Extern wird die ca. 3.3V Versorgungsspannung des Teensys benutzt
   adc->setAveraging(AnalogAveraging, ADC_0);            // Anzahl der Durchschnitswertbildungen
   adc->setResolution(AnalogReadResolutionBits, ADC_0);  // Aufloesung in Bits setzen
-  // it can be ADC_VERY_LOW_SPEED, ADC_LOW_SPEED, ADC_MED_SPEED, ADC_HIGH_SPEED or ADC_VERY_HIGH_SPEED
+  // Conversion/sampling speed can be ADC_VERY_LOW_SPEED, ADC_LOW_SPEED, ADC_MED_SPEED, ADC_HIGH_SPEED or ADC_VERY_HIGH_SPEED
   adc->setConversionSpeed(ADC_VERY_LOW_SPEED, ADC_0);   // change the conversion speed
   adc->setSamplingSpeed(ADC_VERY_LOW_SPEED, ADC_0);     // change the sampling speed
-  // ADC_1 diese Einstellung werden erst wirksam, wenn die speziellen ADC-Pins verwendet werden.
-  // 16 (A2), 17 (A3), 34-36 (A10-A13)
+  // ADC_1 (Einstellung werden erst wirksam, wenn die speziellen ADC-Pins verwendet werden:  16 (A2), 17 (A3), 34-36 (A10-A13)
+  // Dies ist ab Platine v2.5 der Fall (Verwendung der Pins A0, A2 statt A0, A1)
   adc->setReference(ADC_REF_EXTERNAL, ADC_1);           // Bei Extern wird die ca. 3.3V Versorgungsspannung des Teensys benutzt
   adc->setAveraging(AnalogAveraging, ADC_1);            // Anzahl der Durchschnitswertbildungen
   adc->setResolution(AnalogReadResolutionBits, ADC_1);  // Aufloesung in Bits setzen
   adc->setConversionSpeed(ADC_VERY_LOW_SPEED, ADC_1);   // change the conversion speed
   adc->setSamplingSpeed(ADC_VERY_LOW_SPEED, ADC_1);     // change the sampling speed
-  // kann nur verwendet werden, wenn nicht mehr die Pins A0 und A1, sondern A0 und A2 verwendet werden.
-  // Vorteil ist, dass die Abfragezeit der ADC unter einer 4us sinkt
-  adc->startContinuous(Pin_Ubatt, ADC_0);               // Starte die Dauermessung der beiden
-  adc->startContinuous(Pin_Strom, ADC_1);               // ADC im Hintergrund. Dies beschleunigt die Messwerterfassung um das
-  // 150 Fache. Auch hohe Average stÃ¶ren nicht mehr
-  // Die Abfrage der ADC muesste entsprechend angepasst werden
-  adc->analogReadContinuous(ADC_0);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
-  adc->analogReadContinuous(ADC_1);                   // Hole den Messwert des ADC_0 ab Achtung asynchron
+  // Continuous Abfragemodus kann erst ab Platine v2.5 verwendet werden (Verwendung der Pins A0, A2 statt A0, A1)
+  // Abfragezeit der ADC sinkt unter 4us.
+  adc->startContinuous(Pin_Ubatt, ADC_0);               // Starte die Dauermessung der beiden ADC im Hintergrund
+  adc->startContinuous(Pin_Strom, ADC_1);               // Dies beschleunigt die Messwerterfassung um das 150-fache
+                                                        // (damit wird auch die Verwendung einer hohen Meßwertanzahl zum Averaging möglich)
+  adc->analogReadContinuous(ADC_0);                     // Messwertabfrage des ADC_0 ab (Achtung asynchron)
+  adc->analogReadContinuous(ADC_1);                     // Messwertabfrage des ADC_1 ab (Achtung asynchron)
 
   // DAC Einstellungen
   analogWriteFrequency(Pin_Motorstelleranschluss_A, PWMFrequenz); // Einstellen der PWM Parameter fuer den Motorsteller
@@ -172,8 +170,8 @@ void setup()
   timer_2.begin(TimerT2,  100000);  // 0.1 Sekunden Timer
   timer_3.begin(TimerT3,   50000);  // 0.05 Sekunden Timer
 
-  if (DEBUG) Serial.begin(DEBUG_BAUDRATE);   // Debugausgabe ueber USB Schnittstelle definieren
-  Serial_BT.begin(BT_BAUDRATE);              // Werteausgabe ueber Serieller mittels Bluetooth definieren
+  Serial.begin (US_BAUDRATE);    // Ausgabe ueber USBSerial definieren
+  Serial1.begin(BT_BAUDRATE);    // Werteausgabe ueber Serieller mittels Bluetooth definieren
 
   // Alle Ausgangspins definieren
   pinMode(Pin_Hupe, OUTPUT);          // Hupe ist ein Ausgang
@@ -184,7 +182,7 @@ void setup()
   pinMode(Pin_ReceiverLED, OUTPUT);   // ReceiverLED ist ein Ausgang
   pinMode(Pin_PowerSwitch, OUTPUT);   // Power MOSFET ist ein Ausgang
 
-  // Startwert der Ausgaegnge definieren
+  // Startwert der Ausgaenge definieren
   digitalWrite(Pin_Hupe, LOW);        // Hupe aus
   digitalWrite(Pin_Licht, LOW);       // Licht aus
   digitalWrite(Pin_Bremse, LOW);      // Bremslicht aus
@@ -196,7 +194,7 @@ void setup()
   if (LESOFT) {
     for (uint32_t PSPWM = 0; PSPWM < 20; PSPWM++) {
       digitalWrite(Pin_PowerSwitch, LOW);  // Leistungselektronik soft einschalten
-      delay(20 - PSPWM);		         // Pause bis high wird immer kuerzer
+      delay(20 - PSPWM);                   // Pause bis high wird immer kuerzer
       digitalWrite(Pin_PowerSwitch, HIGH); // Leistungselektronik an
       delay(PSPWM);                        // Pause bis low wird immer laenger
     }
@@ -210,7 +208,7 @@ void setup()
 
 void loop()
 {
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Loop");
+  if (DEBUG_Funktion) Serial_B.println("Funktion: Loop");
   if (PairingStatus == LOW) verbinden(); // Versuche mit Nunchuk neu zu verbinden, wenn Funkabriss erkannt worden ist.
   delay(100);
 }
@@ -220,33 +218,33 @@ void loop()
 // -------------------------------------------------------------------------------------------------------------------
 
 void TimerT1() {
-  // Verbindung zum Controller herstellen und Pairing pruefen, Ausgabe Temperatur, Strom, Spannung, Leistung
-  if (DEBUG_ISR) Serial_DB.println("ISR: Timer1Hz");
+  // Temperaturmessung und Ausgabe Temperatur, Strom, Spannung, Momentanleistung und Energieumsatz
+  if (DEBUG_ISR) Serial_B.println("ISR: Timer1Hz");
   if (TEMPMESS) {
     for (uint8_t TempSensor = 0; TempSensor <= defTempSensorAnzahl - 1; TempSensor++) {
-      Serial_BT.print(Temperaturmessung(TempSensor, defTempSensorAnzahl, defTempAddress), 2); // Temperaturmessung und Ausgabe auf BT oder Serial Monitor
-      Serial_BT.print("C, ");
+      Serial_A.print(Temperaturmessung(TempSensor, defTempSensorAnzahl, defTempAddress), 2); // Temperaturmessung und Ausgabe auf BT oder Serial Monitor
+      Serial_A.print("C, ");
     }
   }
-  if (UIMESS) UIausgeben();             // Anzeigen von Strom, Ubatt und Leistung an BT oder Serial Monitor
+  if (UIMESS) UIausgeben();  // Anzeigen von Strom, Ubatt und Leistung an BT oder Serial Monitor
 }
 
 void TimerT2() {
   // Messung Strom, Spannung, Leistung und Ueberstromerkennung
-  if (DEBUG_ISR) Serial_DB.println("ISR: Timer10Hz");
+  if (DEBUG_ISR) Serial_B.println("ISR: Timer10Hz");
   if (UIMESS) {
     UIMessung();                            // Messung und Berechnungen Strom, UBatt, Leistung durchfuehren
     F_Ueberstrom = LOW;                     // Ueberstrom Flag loeschen
     if (Strom[StromIndex] >= Imax) {
       if (Strom[StromIndex] >= Ishort) {    // Strom groesser als der Kurzschlussstrom?
-        if (DEBUG_Messung) Serial_DB.println("Kurzschluss!");
+        if (DEBUG_Messung) Serial_B.println("Kurzschluss!");
         Imomentan = Ishort;                 // dann begrenzen auf Ishort
       }
       else Imomentan = Strom[StromIndex];   // wenn nicht ist der Momentanstrom der gemessende Strom
       F_Ueberstrom = HIGH;                  // Motorstellroutine benachrichtigen, dass der Strom zu gross ist
       if (DEBUG_Messung) {
-        Serial_DB.print("Ueberstrom :");
-        Serial_DB.println(Imomentan);
+        Serial_B.print("Ueberstrom :");
+        Serial_B.println(Imomentan);
       }
       Reduktionsfaktor = (100 - ((Imomentan - Imax) * Reduktionsgewichtung)) / 100; // Der Reduktionsfaktor kann beim Kurzschluss 100% erreichen
     }
@@ -255,14 +253,14 @@ void TimerT2() {
 
 void TimerT3() {
   //time = millis();
-  //Serial_DB.println(time);         // prints time since program started
+  //Serial_B.println(time);       // time since program started
   if (PairingStatus == HIGH) {
-    Funkabriss();                  // Nunchuk auslesen bei gleichzeitiger PrÃ¼fung auf Funkabriss
+    Funkabriss();                  // Nunchuk auslesen bei gleichzeitiger Pruefung auf Funkabriss
     Motorsteuerung();              // Motorsteuerung
     if (LICHTHUPE) Licht_Hupe();   // Licht und Hupe
     Hase_Igel();                   // Geschwindigkeitsumschaltung
     BlinkerRL();                   // Blinker Rechts Links
-    //Drive_Mode();                  // Umschaltung DirectDrive / Integral Mode
+    Drive_Mode();                  // Umschaltung DirectDrive / Integral Mode
   }
 }
 
@@ -273,9 +271,9 @@ static inline int8_t sgn(int16_t val) {
 
 void verbinden() {
   // Verbindung zum Controller herstellen und Pairing pruefen
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: verbinden");
+  if (DEBUG_Funktion) Serial_B.println("Funktion: verbinden");
   if ((analogX_12bit && analogX_12bit == 0xFF) || accelX > 1024  || PairingStatus == LOW) {
-    if (DEBUG_Nunchuk) Serial_DB.println("Die Kommunikation zum Nunchuck muss erneut hergestellt werden");
+    if (DEBUG_Nunchuk) Serial_B.println("Die Kommunikation zum Nunchuck muss erneut hergestellt werden");
     PairingStatus = LOW;                                                // Verbindung zun Controller steht nicht
     digitalWrite(Pin_ReceiverLED, LOW);                                 // ReceiverLED aus
     StellWertMotor = LeerlaufStellWertMotor;                            // StellWertMotor auf Leerlauf setzen
@@ -300,11 +298,23 @@ void verbinden() {
 void  Nunchuk_auslesen() {
   // Nunchuck Hilfsvariablen auslesen und global zur Verfuegung stellen
 
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Nunchuk");
+  if (DEBUG_Funktion) Serial_B.println("Funktion: Nunchuk");
   if (PairingStatus == LOW) nunchuk.init();   // Nunchuck Kommunikation initialisieren (muss hier rein zum Pairing ohne USB Kabel)
   nunchuk.update();                           // Neue Werte vom Controller holen und in globalen Variablen ablegen
   analogX = nunchuk.analogX;
   analogY = nunchuk.analogY;
+
+  if (DEBUG_Nunchuk) {
+    Serial_B.print("Nunchuk_raw: ");
+    Serial_B.print(" X: ");
+    Serial_B.print(analogX);
+    Serial_B.print(" Y: ");
+    Serial_B.print(analogY);
+    Serial_B.print(" cB: ");
+    Serial_B.print(cButton);
+    Serial_B.print(" zB: ");
+    Serial_B.println(zButton);
+  }
 
   if (analogX <= XAchseMin) analogX = XAchseMin; // Sicherheitsfunktion
   if (analogX >= XAchseMax) analogX = XAchseMax;
@@ -321,21 +331,17 @@ void  Nunchuk_auslesen() {
   accelZ = nunchuk.accelZ;
 
   if (DEBUG_Nunchuk) {
-    Serial_DB.print("Nunchuk: ");
-    Serial_DB.print(" X: ");
-    Serial_DB.print(analogX_12bit);
-    Serial_DB.print(" Y: ");
-    Serial_DB.print(analogY_12bit);
-    Serial_DB.print(" cB: ");
-    Serial_DB.print(cButton);
-    Serial_DB.print(" zB: ");
-    Serial_DB.println(zButton);
+    Serial_B.print("Nunchuk_map: ");
+    Serial_B.print(" X: ");
+    Serial_B.print(analogX_12bit);
+    Serial_B.print(" Y: ");
+    Serial_B.println(analogY_12bit);
   }
 }
 
 void Funkabriss() {
   // Totmannschalter und Funkabriss pruefen
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Funkabriss");
+  if (DEBUG_Funktion) Serial_B.println("Funktion: Funkabriss");
   digitalWrite(Pin_ReceiverLED, HIGH);              // Pairing steht, Status ReceiverLED an
   accelXAlt = accelX;
   Nunchuk_auslesen();
@@ -351,23 +357,24 @@ void Funkabriss() {
 
 void Motorsteuerung() {
   // PWM-Stellwert Motorservo ermitteln und vorgeben
+
   //time = micros();
   int16_t Y_UT, Y_OT;        // Abstand zum unteren (UT) und oberen Totpunkt (OT)
   int8_t sgnY_UT, sgnY_OT;   // Lage der Sollwertvorgabe der Y-Achse relativ zum oberen bzw. unteren Totpunkt (+/-1)
   int8_t u, v, w;            // Hilfsvariablen zur Bereichserkennung der Y-Achse analogY_12bit relativ zu UT, OT (artifiziell)
-  //       y-Achse <  UT: u= 0, v=-1, w=+1
-  // UT <= y-Achse <  OT: u=+1, v= 0, w=-1
-  //       y-Achse >= OT: u= 0, v=+1, w=+1
-  uint8_t a, b;              // Hilfsvariablen fÃ¼r die ÃœberfÃ¼hrung der Bereichserkennung in eine Rechenvorschrift
-  // Die BinÃ¤rfaktoren a und b kÃ¶nnen dabei nur die Werte 0 und 1 annehmen, um gezielt unterschiedliche Terme der Berechnungsvorschrift zu aktivieren
-  //       y-Achse <  UT: a=1 && b=0
-  // UT <= y-Achse <  OT: a=0 && b=0
-  //       y-Achse >= OT: a=0 && b=1
+                             //       y-Achse <  UT: u= 0, v=-1, w=+1
+                             // UT <= y-Achse <  OT: u=+1, v= 0, w=-1
+                             //       y-Achse >= OT: u= 0, v=+1, w=+1
+  uint8_t a, b;              // Hilfsvariablen fuer die Ueberfuehrung der Bereichserkennung in eine Rechenvorschrift
+                             // Die Binaerfaktoren a und b koennen dabei nur die Werte 0 und 1 annehmen, um gezielt unterschiedliche Terme der Berechnungsvorschrift zu aktivieren
+                             //       y-Achse <  UT: a=1 && b=0
+                             // UT <= y-Achse <  OT: a=0 && b=0
+                             //       y-Achse >= OT: a=0 && b=1
 
-  uint32_t StellWertMotorMaxUT;   //Maxialer Wertebereich fÃ¼r den Motorstellwert unterhalb UT
-  uint32_t StellWertMotorMaxOT;   //Maxialer Wertebereich fÃ¼r den Motorstellwert oberhalb OT
+  uint32_t StellWertMotorMaxUT;   //Maxialer Wertebereich fuer den Motorstellwert unterhalb UT
+  uint32_t StellWertMotorMaxOT;   //Maxialer Wertebereich fuer den Motorstellwert oberhalb OT
 
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Motorsteuerung");
+  if (DEBUG_Funktion) Serial_B.println("Funktion: Motorsteuerung");
 
   StellWertMotorMaxUT = LeerlaufStellWertMotor - UntererStellWertMotor;
   StellWertMotorMaxOT = ObererStellWertMotor - LeerlaufStellWertMotor;
@@ -384,17 +391,19 @@ void Motorsteuerung() {
   a = 0.5 * (u - v + w);
   b = 0.5 * (u + v + w);
 
+  // Motorstellwert setzen
+
   if (zButton == HIGH) {
     if (sgnY_OT) AbwurfGefahr = HIGH;
     StellWertMotor = int(StellWertMotor) * !DirectDrive + int(LeerlaufStellWertMotor) * DirectDrive
-                     + a * sgnY_UT * pow(abs(Y_UT), YAchseExpNeg) / pow(YAchseUT_12bit, YAchseExpNeg)        * StellWertMotorMaxUT / BremsDaempfungUmschalt
+                     + a * sgnY_UT * pow(abs(Y_UT), YAchseExpNeg) / pow(YAchseUT_12bit, YAchseExpNeg)          * StellWertMotorMaxUT / BremsDaempfungUmschalt
                      + b *           pow(abs(Y_OT), YAchseExpPos) / pow((4095 - YAchseOT_12bit), YAchseExpPos) * StellWertMotorMaxOT / BeschleunigungsDaempfungUmschalt;
   }
 
   if (zButton == LOW) {   // Gleichbehandlung von INTEGRATIONSSTEUERUNG UND DIRECT DRIVE bei losgelassenem Z-Knopf
-    StellWertMotor = LeerlaufStellWertMotor;   // Freilauf des Motors sobald die Z-Taste losgelassen wird
-    if (a == 0 && b == 0) AbwurfGefahr = LOW;  // Direktes Bremsen darf nicht aus versehen ausgelÃ¶st werden
-    if (a == 1 && b == 0 && AbwurfGefahr == LOW) { // Direktes Abbremsen wenn zusaetzlich der untere Totpunkt unterschritten wird
+    StellWertMotor = LeerlaufStellWertMotor;         // Freilauf des Motors sobald die Z-Taste losgelassen wird
+    if (a == 0 && b == 0) AbwurfGefahr = LOW;        // Direktes Bremsen darf nicht aus versehen ausgeloest werden
+    if (a == 1 && b == 0 && AbwurfGefahr == LOW) {   // Direktes Abbremsen wenn zusaetzlich der untere Totpunkt unterschritten wird
       StellWertMotor = LeerlaufStellWertMotor + sgnY_UT * pow(abs(Y_UT), YAchseExpNeg) / pow(YAchseUT_12bit, YAchseExpNeg) * StellWertMotorMaxUT;
     }
   }
@@ -406,49 +415,57 @@ void Motorsteuerung() {
   if (F_Ueberstrom == HIGH && StellWertMotor > LeerlaufStellWertMotor) {
     StellWertMotor = LeerlaufStellWertMotor + (StellWertMotorAlt - LeerlaufStellWertMotor) * Reduktionsfaktor;
     if (DEBUG_Motorsteller) {
-      Serial_DB.print("Reduktionsfaktor: ");
-      Serial_DB.println(Reduktionsfaktor);
+      Serial_B.print("Reduktionsfaktor: ");
+      Serial_B.println(Reduktionsfaktor);
     }
   }
-  StellWertMotorAlt = StellWertMotor;  // Referenzwert fÃ¼r die kontinuierliche Reduktion des Motorstellwertes bei Ãœberstrom
+  StellWertMotorAlt = StellWertMotor;   // Referenzwert fuer die kontinuierliche Reduktion des Motorstellwertes bei Ueberstrom
+
+  if (DEBUG_Motorsteller) {
+    Serial_B.print("StellWertMotor: ");
+    Serial_B.print(StellWertMotor);
+    if (StellWertMotor == LeerlaufStellWertMotor) Serial_B.println(" Neutralstellung");
+    if (StellWertMotor >  LeerlaufStellWertMotor) Serial_B.println(" Beschleunigung");
+    if (StellWertMotor <  LeerlaufStellWertMotor) Serial_B.println(" Bremsen");
+  }
 
   analogWrite(Pin_Motorstelleranschluss_A, StellWertMotor);   // Geschwindigkeitsvorgabe Motor-A in PWM-Register setzen
   analogWrite(Pin_Motorstelleranschluss_B, StellWertMotor);   // Geschwindigkeitsvorgabe Motor-B in PWM-Register setzen
 
-  // Bremslich und Servo
+  // Bremsservostellwert und Bremslicht setzen
+
   if (StellWertMotor <  LeerlaufStellWertMotor) {
-    digitalWrite(Pin_Bremse, HIGH);                       // Bremslicht an
-    analogWrite(Pin_Brems_Servo, PWM_Bremse_Vollbremse * AnalogWriteResolutionValue * PWMFrequenz / 1000); // PWM Register Bremsservo auf Vollbremse
-    if (DEBUG_Motorsteller) Serial_DB.println(PWM_Bremse_Vollbremse * AnalogWriteResolutionValue * PWMFrequenz / 1000);
+    digitalWrite(Pin_Bremse, HIGH);                    // Bremslicht an
+    analogWrite(Pin_Brems_Servo, StellWertBremse_max); // PWM Register Bremsservo auf Vollbremse
+    if (DEBUG_Bremse) {
+      Serial_B.print("PWM_Bremse_Vollbremse: ");
+      Serial_B.println(StellWertBremse_max);
+    }
   }
   else {
-    digitalWrite(Pin_Bremse, LOW);                        // Bremslicht aus
-    analogWrite(Pin_Brems_Servo, PWM_Bremse_Ungebremst * AnalogWriteResolutionValue * PWMFrequenz / 1000); // PWM Register Bremsservo auf Bremse loesen
-    if (DEBUG_Motorsteller) Serial_DB.println(PWM_Bremse_Ungebremst * AnalogWriteResolutionValue * PWMFrequenz / 1000);
+    digitalWrite(Pin_Bremse, LOW);                     // Bremslicht aus
+    analogWrite(Pin_Brems_Servo, StellWertBremse_off); // PWM Register Bremsservo auf Bremse loesen
+    if (DEBUG_Bremse) {
+      Serial_B.print("PWM_Bremse_Ungebremst: ");
+      Serial_B.println(StellWertBremse_off);
+    }  
   }
 
-  if (DEBUG_Motorsteller) {
-    Serial_DB.print("StellWertMotor: ");
-    Serial_DB.print(StellWertMotor);
-    if (StellWertMotor == LeerlaufStellWertMotor) Serial_DB.println(" Neutralstellung");
-    if (StellWertMotor >  LeerlaufStellWertMotor) Serial_DB.println(" Beschleunigung");
-    if (StellWertMotor <  LeerlaufStellWertMotor) Serial_DB.println(" Bremsen");
-  }
   // CPU-Zeit messen und anzeigen
   //time = micros()-time;
-  //Serial_DB.print("Ausfuehrungszeit: ");
-  //Serial_DB.println(time);
+  //Serial_B.print("Ausfuehrungszeit: ");
+  //Serial_B.println(time);
 }
 
 void Licht_Hupe() {
   // Licht und Hupe benutzen den selben Taster sind aber durch die Nunchuk X-Achse getrennt
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Licht_Hupe");
-  if (cButton == LOW) cButtonZero = LOW;                         // Trigger auf ansteigende Flanke, damit Licht nicht blinkt
+  if (DEBUG_Funktion) Serial_B.println("Funktion: Licht_Hupe");
+  if (cButton == LOW) cButtonZero = LOW;                           // Trigger auf ansteigende Flanke, damit Licht nicht blinkt
   if (cButton == HIGH && cButtonZero == LOW && analogX_12bit < XAchseLinks_12bit) {  // Toggle Licht Nunchuck X < 30
     digitalWrite(Pin_Licht, !digitalRead(Pin_Licht));
-    cButtonZero = HIGH;                                          // Licht gegen Blinken sperren
+    cButtonZero = HIGH;                                            // Licht gegen Blinken sperren
   }
-  if (cButton == HIGH && analogX_12bit > XAchseLinks_12bit) {    // Hupe an solange C-Taste gedrueckt und X > 30
+  if (cButton == HIGH && analogX_12bit > XAchseLinks_12bit) {      // Hupe an solange C-Taste gedrueckt und X > 30
     digitalWrite(Pin_Hupe, HIGH);
   }
   else {
@@ -458,7 +475,7 @@ void Licht_Hupe() {
 
 void BlinkerRL() {
   // Licht und Hupe benutzen den selben Taster sind aber durch die Nunchuk X-Achse getrennt
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: BlinkerRL");
+  if (DEBUG_Funktion) Serial_B.println("Funktion: BlinkerRL");
   if (analogX_12bit < XAchseLinks_12bit) {  // Blinker Links wenn Nunchuck X < XAchseLinks
     digitalWrite(Pin_Blinker_L, HIGH);      // Blinker Links an
   }
@@ -466,17 +483,39 @@ void BlinkerRL() {
     digitalWrite(Pin_Blinker_R, HIGH);      // Blinker Rechts an
   }
   else {
-    digitalWrite(Pin_Blinker_L, LOW);     // Blinker Links aus
-    digitalWrite(Pin_Blinker_R, LOW);     // Blinker Rechts aus
+    digitalWrite(Pin_Blinker_L, LOW);       // Blinker Links aus
+    digitalWrite(Pin_Blinker_R, LOW);       // Blinker Rechts aus
   }
 }
 
 void Hase_Igel() {
   // Umschaltung Maximalgeschwindigkeitsbegrenzung durch Z-Button und analoger X-Achse
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Hase_Igel");
+  uint32_t dTimeObererStellWertMotor;
+  static uint32_t startTime=0;
+  
+  if (DEBUG_Funktion) Serial_B.println("Funktion: Hase_Igel");
   if (zButton == LOW) zButtonZero = LOW;
+  
   if (zButton == HIGH && zButtonZero == LOW && analogX_12bit < XAchseLinks_12bit) {
+    
     ObererStellWertMotorUmschaltCounter ++;          // Counter fuer Geschwindigkeitsumschaltung hochzaehlen
+    
+    if (ObererStellWertMotorUmschaltCounter == 1) startTime = millis();   // Zeitlimit fuer Modeumschaltung
+    if (ObererStellWertMotorUmschaltCounter == 2) {
+      dTimeObererStellWertMotor = millis()-startTime;
+      if ((dTimeObererStellWertMotor) > MaxUmschaltDauer) { 
+        ObererStellWertMotorUmschaltCounter = 1;
+        startTime = millis();
+      }
+    }
+    if (ObererStellWertMotorUmschaltCounter == 3) {
+      dTimeObererStellWertMotor = millis()-startTime;
+      if ((dTimeObererStellWertMotor) > MaxUmschaltDauer) { 
+        ObererStellWertMotorUmschaltCounter = 1;
+        startTime = millis();
+      }
+    }
+
     if (LICHTHUPE) {
       digitalWrite(Pin_Hupe, HIGH);                  // Zur Bestaetigung 200ms hupen
       delay (200);
@@ -484,30 +523,67 @@ void Hase_Igel() {
     }
     zButtonZero = HIGH;                              // Routine gegen Festhalten des Z-Tasters sperren
     if (ObererStellWertMotorUmschaltCounter == 3) {  // Es muss dreimal die Z-Taste und der X-Joystick ausgeloest werden
-      if      (ObererStellWertMotor == ObererStellWertMotorHase) ObererStellWertMotor = ObererStellWertMotorIgel; // Auf Igel umschalten
-      else if (ObererStellWertMotor == ObererStellWertMotorIgel) ObererStellWertMotor = ObererStellWertMotorHase; // Auf Hase umschalten
+      if (ObererStellWertMotor == ObererStellWertMotorHase) {
+        ObererStellWertMotor = ObererStellWertMotorIgel; // Auf Igel umschalten
+        if (DEBUG_DriveMode) Serial_B.println ("aktuelle Stellwertbegrenzung: Igel");
+      }
+      else if (ObererStellWertMotor == ObererStellWertMotorIgel) { 
+        ObererStellWertMotor = ObererStellWertMotorHase; // Auf Hase umschalten    
+        if (DEBUG_DriveMode) Serial_B.println ("aktuelle Stellwertbegrenzung: Hase");
+      }
+      if (DEBUG_DriveMode) {
+        Serial_B.print("ObererStellWertMotorUmschaltCounter: ");
+        Serial_B.println(ObererStellWertMotorUmschaltCounter);
+        Serial_B.print("ObererStellWertMotor: ");
+        Serial_B.println(ObererStellWertMotor);
+      }   
       ObererStellWertMotorUmschaltCounter = 0;       // Counter zuruecksetzen
       if (LICHTHUPE) {
         digitalWrite(Pin_Hupe, HIGH);                // Zur Bestaetigung der Umschaltung 500ms hupen
         delay (500);
         digitalWrite(Pin_Hupe, LOW);
-      }
+      } 
     }
   }
 }
 
 void Drive_Mode() {
-  // Umschaltung des Drive Modes durch Z-Button und analoger X-Achse
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Drvie_Mode");
+  // Umschaltung des Drive Modes durch Z-Button und analoger X-Achse                        
+  uint32_t dTimeDriveMode;
+  static uint32_t startTime=0;
+
+  if (DEBUG_Funktion) Serial_B.println ("Funktion: Drive_Mode");
   if (zButton == LOW) zButtonZero = LOW;
+
+  //Serial_B.print("DriveModeUmschaltCounter: ");
+  //Serial_B.println(DriveModeUmschaltCounter);
+
   if (zButton == HIGH && zButtonZero == LOW && analogX_12bit > XAchseRechts_12bit) {
-    DriveModeUmschaltCounter ++;          // Counter fuer Geschwindigkeitsumschaltung hochzaehlen
+
+    DriveModeUmschaltCounter ++;         // Counter fuer Geschwindigkeitsumschaltung hochzaehlen
+
+    if (DriveModeUmschaltCounter == 1) startTime = millis();   // Zeitlimit fuer Modeumschaltung
+    if (DriveModeUmschaltCounter == 2) {
+      dTimeDriveMode = millis()-startTime;
+      if ((dTimeDriveMode) > MaxUmschaltDauer) { 
+        DriveModeUmschaltCounter = 1;
+        startTime = millis();
+      }
+    }
+    if (DriveModeUmschaltCounter == 3) {
+      dTimeDriveMode = millis()-startTime;
+      if ((dTimeDriveMode) > MaxUmschaltDauer) { 
+        DriveModeUmschaltCounter = 1;
+        startTime = millis();
+      }
+    }
+
     if (LICHTHUPE) {
-      digitalWrite(Pin_Hupe, HIGH);                  // Zur Bestaetigung 200ms hupen
+      digitalWrite(Pin_Hupe, HIGH);      // Zur Bestaetigung 200ms hupen
       delay (200);
       digitalWrite(Pin_Hupe, LOW);
     }
-    zButtonZero = HIGH;                              // Routine gegen Festhalten des Z-Tasters sperren
+    zButtonZero = HIGH;                  // Routine gegen Festhalten des Z-Tasters sperren
     if (DriveModeUmschaltCounter == 3) { // Es muss dreimal die Z-Taste und der X-Joystick ausgeloest werden
       if      (DirectDrive == true) {
         DirectDrive = false;             // Auf IntegralDrive umschalten
@@ -520,14 +596,15 @@ void Drive_Mode() {
         BeschleunigungsDaempfungUmschalt = 1;
       }
       if (DEBUG_DriveMode) {
-        Serial_DB.print("DriveModeUmschaltCounter: ");
-        Serial_DB.println(DriveModeUmschaltCounter);
-        Serial_DB.print("DriveMode: ");
-        Serial_DB.println(DirectDrive);
+        Serial_B.print("DriveModeUmschaltCounter: ");
+        Serial_B.println(DriveModeUmschaltCounter);
+        Serial_B.print("DriveMode: ");
+        Serial_B.println(DirectDrive);
       }
       DriveModeUmschaltCounter = 0;       // Counter zuruecksetzen
+      LeerlaufStellWertMotor = float(PWM_LeerlaufStellWertMotor*AnalogWriteResolutionValue*PWMFrequenz/1000) + (LeerlaufOffset * !DirectDrive); // Update Leerlaufstellwert
       if (LICHTHUPE) {
-        digitalWrite(Pin_Hupe, HIGH);                // Zur Bestaetigung der Umschaltung 500ms hupen
+        digitalWrite(Pin_Hupe, HIGH);     // Zur Bestaetigung der Umschaltung 500ms hupen
         delay (500);
         digitalWrite(Pin_Hupe, LOW);
       }
@@ -537,59 +614,63 @@ void Drive_Mode() {
 
 void UIMessung() {
   // Messen und berechnen von Strom Ubatt und Leistung
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: UIMessung");
+  if (DEBUG_Funktion) Serial_B.println("Funktion: UIMessung");
   //time = micros();
   Ubatt = adc->analogReadContinuous(ADC_0) * UbattFaktor; // Ubatt in V messen
+
   //time = micros()-time;
-  //Serial_DB.println(time);
+  //Serial_B.println(time);
   Strom[StromIndex] = (adc->analogReadContinuous(ADC_1) * StromFaktor) - Strom0A; // Strom in A messen und in Array ablegen
-  Momentanleistung = UBatPoly * Strom[StromIndex];     // Berechnung der Momentanleistung
-  StromIndex++;                                        // StromIndex increment
-  if (StromIndex > 9) StromIndex = 0;                  // 10 Messwerte im Kreis messen
+
+  Momentanleistung = UBatPoly * Strom[StromIndex];       // Berechnung der Momentanleistung
+  StromIndex++;                                          // StromIndex increment
+  if (StromIndex > 9) StromIndex = 0;                    // 10 Messwerte im Kreis messen
   Leistung = Leistung + Momentanleistung / LeistungNorm; // Berechnung der insgesamt umgesetzten Stundenleistungsberechnung
   if (DEBUG_Messung) {
-    Serial_DB.print("Spannung: ");
-    Serial_DB.println(UBatPoly);
-    Serial_DB.print("Strom: ");
-    Serial_DB.println(Strom[0]);
+    Serial_B.print("Spannung: ");
+    Serial_B.println(UBatPoly);
+    Serial_B.print("Strom: ");
+    Serial_B.println(Strom[0]);
   }
 }
 
 FASTRUN void UIausgeben() {
   // Ausgabe der Messwerte ueber die Serielle und oder Bluetooth
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: UIausgeben");
+  if (DEBUG_Funktion) Serial_B.println("Funktion: UIausgeben");
   //time = micros();
-  Serial_BT.print(UBatPoly, 3);             // Spannung ausgeben
-  Serial_BT.print("V, ");
-  Serial_BT.print(Iaverage(), 3);        // Durchschnittsstrom ausgeben
-  Serial_BT.print("A, ");
-  Serial_BT.print(Momentanleistung, 2);  // Momentanleistung ausgeben
-  Serial_BT.print("W, ");
-  Serial_BT.print(Leistung, 2);          // Umgesetzte Leistung ausgeben
-  Serial_BT.println("Wh");
+  //Serial_A.print(Ubatt, 3);             // gemessene Spannung ausgeben
+  //Serial_A.print("V, ");
+  Serial_A.print(UBatPoly, 3);          // korrigierte Spannung ausgeben
+  Serial_A.print("V, ");
+  Serial_A.print(Iaverage(), 3);        // Durchschnittsstrom ausgeben
+  Serial_A.print("A, ");
+  Serial_A.print(Momentanleistung, 2);  // Momentanleistung ausgeben
+  Serial_A.print("W, ");
+  Serial_A.print(Leistung, 2);          // Umgesetzte Leistung ausgeben
+  Serial_A.println("Wh");
   //time = micros()-time;
-  //Serial_DB.print("Ausfuehrungszeit: ");
-  //Serial_DB.println(time);
+  //Serial_B.print("Ausfuehrungszeit: ");
+  //Serial_B.println(time);
 }
 
-float Iaverage()
+float Iaverage() {
 // Der Strom wird ueber 10 Abtastwerte gemittelt und damit geglaettet
-{
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Iaverage");
+
+  if (DEBUG_Funktion) Serial_B.println("Funktion: Iaverage");
   uint32_t i;
-  float Isumme = 0;	// Summe der Stroeme
-  float Ergebnis = 0;	// Ergebnis der Berechnung -> Iaverage
-  // 10 Strommesswerte aufsummieren und Mittelwert berechnen
-  for (i = 0; i < 10; i++) Isumme = Isumme + Strom[i];
+  float Isumme = 0;     // Summe der Stroeme
+  float Ergebnis = 0;   // Ergebnis der Berechnung -> Iaverage
+  
+  for (i = 0; i < 10; i++) Isumme = Isumme + Strom[i];   // 10 Strommesswerte aufsummieren und Mittelwert berechnen
   Ergebnis = Isumme / 10;
   return Ergebnis;
 }
 
-float Temperaturmessung(uint8_t TempSensor, uint8_t TempSensorAnzahl, uint8_t TempAddress[2][8]) // Rueckgabewert celsius
-// Temperaturmessung mittels OneWire Bussystem
+float Temperaturmessung(uint8_t TempSensor, uint8_t TempSensorAnzahl, uint8_t TempAddress[2][8]) {
+// Temperaturmessung in celsius mittels OneWire Bussystem
 // Achtung nur DS18B20
-{
-  if (DEBUG_Funktion) Serial_DB.println("Funktion: Temperaturmessung");
+
+  if (DEBUG_Funktion) Serial_B.println("Funktion: Temperaturmessung");
   uint32_t data[12];
   float celsius;
 
@@ -603,11 +684,9 @@ float Temperaturmessung(uint8_t TempSensor, uint8_t TempSensorAnzahl, uint8_t Te
   data[0] = ds.read();   // Temperatur abholen unteres uint32_t
   data[1] = ds.read();   // Temperatur abholen oberes uint32_t
 
-
   uint32_t raw = (data[1] << 8) | data[0];
   
   celsius = (float)raw / 16.0;
 
   return celsius;
 }
-
