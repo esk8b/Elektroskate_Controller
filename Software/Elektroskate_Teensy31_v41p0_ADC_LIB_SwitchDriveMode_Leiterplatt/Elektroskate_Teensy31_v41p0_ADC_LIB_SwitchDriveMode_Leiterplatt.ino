@@ -138,7 +138,7 @@ void setup()
   pinMode(Pin_Ubatt, INPUT);                            // Spannungsmesspin aktivieren
   pinMode(Pin_Strom, INPUT);                            // Strommesspin aktivieren
   // ADC_0
-  adc->setReference(ADC_REF_EXTERNAL, ADC_0);           // Bei Extern wird die ca. 3.3V Versorgungsspannung des Teensys benutzt
+  adc->setReference(ADC_REF_EXT, ADC_0);           // Bei Extern wird die ca. 3.3V Versorgungsspannung des Teensys benutzt
   adc->setAveraging(AnalogAveraging, ADC_0);            // Anzahl der Durchschnitswertbildungen
   adc->setResolution(AnalogReadResolutionBits, ADC_0);  // Aufloesung in Bits setzen
   // Conversion/sampling speed can be ADC_VERY_LOW_SPEED, ADC_LOW_SPEED, ADC_MED_SPEED, ADC_HIGH_SPEED or ADC_VERY_HIGH_SPEED
@@ -146,7 +146,7 @@ void setup()
   adc->setSamplingSpeed(ADC_VERY_LOW_SPEED, ADC_0);     // change the sampling speed
   // ADC_1 (Einstellung werden erst wirksam, wenn die speziellen ADC-Pins verwendet werden:  16 (A2), 17 (A3), 34-36 (A10-A13)
   // Dies ist ab Platine v2.5 der Fall (Verwendung der Pins A0, A2 statt A0, A1)
-  adc->setReference(ADC_REF_EXTERNAL, ADC_1);           // Bei Extern wird die ca. 3.3V Versorgungsspannung des Teensys benutzt
+  adc->setReference(ADC_REF_EXT, ADC_1);           // Bei Extern wird die ca. 3.3V Versorgungsspannung des Teensys benutzt
   adc->setAveraging(AnalogAveraging, ADC_1);            // Anzahl der Durchschnitswertbildungen
   adc->setResolution(AnalogReadResolutionBits, ADC_1);  // Aufloesung in Bits setzen
   adc->setConversionSpeed(ADC_VERY_LOW_SPEED, ADC_1);   // change the conversion speed
