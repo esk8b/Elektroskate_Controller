@@ -87,4 +87,6 @@ Funktionen
                           Motorsteller-Offset wieder eingefuegt (zeigt nicht den gewuenschten Effekt, obwohl der Motorstellwert korrekt erhoeht wird, ist noch zu ueberpruefen)
                           Umschaltung DriveMode und Stellwerbegrenzung ist gegen versehentliches Umschalten geschuetzt (muss innerhalb einer vorgegebenen Zeit statt finden)
                           Korrekturpolynom fuer 42,9 V Messbereich ergaenzt
- 4.1p5-29.06.2015 Barney: Anpassung fuer Arduino 1.6.5.r2 und Teensyduino 1.24 adc.h adc->setReference(ADC_REF_EXT, ADC_0); siehe Dokumentation adc Lib                        
+ 4.1p5-29.06.2015 Barney: Anpassung fuer Arduino 1.6.5.r2 und Teensyduino 1.24 adc.h adc->setReference(ADC_REF_EXT, ADC_0); siehe Dokumentation adc Lib
+ 4.1p6-21.08.2015 Barney: Messung und Anzeige des Akkuinnenwiderstandes waerend der Fahrt                       
+ 4.1p7-29.07.2016 Barney: Notausschalter-Anschluss, Motor wird abgeschaltet, wenn Kontakt Notaus unterbrochen wird

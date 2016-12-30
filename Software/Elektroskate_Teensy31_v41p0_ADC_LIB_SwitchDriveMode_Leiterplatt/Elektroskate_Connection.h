@@ -53,3 +53,5 @@ OneWire ds(Pin_Temperaturanschluss);     // den oben definierten Pin zuweisen
 #define Pin_Bremse 6                     // Pin D6 Ausgang fuer Bremslicht
 // Anti-Spark Schaltung
 #define Pin_PowerSwitch 12               // Pin D12 Ausgang PWM zum Einschalten des Leistungsteils mittels MOSFET oder BTS555
+// Notausschalter inaktiv gegen GND loest bei +3.3V aus
+#define Pin_Notaus A7
